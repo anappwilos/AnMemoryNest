@@ -38,12 +38,15 @@ export const PeopleManager = () => {
   const filtered = relatives.filter(r => r.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 md:space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-serif text-stone-950 font-bold">Personas y Árbol de Relatos</h2>
-          <p className="text-stone-600">Identifica a tus seres queridos y asócialos a las voces e imágenes de tus álbumes.</p>
+          <div className="flex items-center gap-3">
+            <h2 className="text-3xl md:text-4xl font-serif text-stone-950 font-bold">Personas y Árbol</h2>
+            <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-1 rounded-full uppercase tracking-wider">En desarrollo</span>
+          </div>
+          <p className="text-sm md:text-base text-stone-600 mt-1 md:mt-0">Identifica a tus seres queridos y asócialos a las voces e imágenes de tus álbumes.</p>
         </div>
         <div className="relative w-full md:w-64">
           <input 

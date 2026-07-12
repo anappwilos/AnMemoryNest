@@ -336,13 +336,9 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
                 </div>
 
                 <div className="flex justify-between mt-6 pt-6 border-t border-stone-100">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold font-serif text-amber-950">{album.imagesCount}</p>
-                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">FOTOS</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold font-serif text-amber-950">{album.videosCount}</p>
-                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">VÍDEOS</p>
+                  <div className="text-center w-full">
+                    <p className="text-3xl font-bold font-serif text-amber-950">{album.memories?.length || 0}</p>
+                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">RECUERDOS</p>
                   </div>
                 </div>
               </div>

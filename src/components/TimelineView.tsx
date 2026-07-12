@@ -24,12 +24,12 @@ export const TimelineView = ({ albums, onAlbumClick }: { albums: Album[], onAlbu
     );
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 md:space-y-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-4xl font-serif text-stone-950 font-bold">Bitácora Cronológica</h2>
-          <p className="text-stone-600">Explora la historia de tus álbumes agrupada en hermosos capítulos cronológicos.</p>
+          <h2 className="text-3xl md:text-4xl font-serif text-stone-950 font-bold">Bitácora Cronológica</h2>
+          <p className="text-sm md:text-base text-stone-600 mt-1 md:mt-0">Explora la historia de tus álbumes agrupada en hermosos capítulos cronológicos.</p>
         </div>
         <div className="flex gap-2 items-center">
           <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Filtrar:</span>

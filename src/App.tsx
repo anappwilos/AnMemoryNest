@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
-import { Register } from './components/Register';
 import { CreateAlbum } from './components/CreateAlbum';
 import { AlbumDetail } from './components/AlbumDetail';
 import { Footer } from './components/Footer';
@@ -14,39 +13,66 @@ import { PeopleManager } from './components/PeopleManager';
 import { TimelineView } from './components/TimelineView';
 import { DigitalLegacy } from './components/DigitalLegacy';
 import { NewMemoryModal } from './components/NewMemoryModal';
-
 import { BottomNavigation } from './components/BottomNavigation';
 
 // Static / State Data
-import { INITIAL_ALBUMS, INITIAL_SUGGESTIONS } from './data';
 import { Album, AISuggestion } from './types';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth } from './lib/firebase';
+import { useAlbums, useCreateAlbum, useUpdateAlbum } from './hooks/useAlbums';
 
 export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  
   const [currentView, setCurrentView] = useState('landing');
   const [currentTab, setCurrentTab] = useState('Home');
-  const [albums, setAlbums] = useState<Album[]>(INITIAL_ALBUMS);
-  const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>(INITIAL_SUGGESTIONS);
+  const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
   const [activeAlbumId, setActiveAlbumId] = useState<string | null>(null);
   const [newMemoryModalOpen, setNewMemoryModalOpen] = useState(false);
 
+  const albumsQuery = useAlbums(user?.uid);
+  const createAlbumMutation = useCreateAlbum();
+  const updateAlbumMutation = useUpdateAlbum();
+
+  const albums = albumsQuery.data || [];
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+      if (currentUser) {
+        if (currentView === 'landing' || currentView === 'login' || currentView === 'register') {
+          setCurrentView('dashboard');
+        }
+      } else {
+        if (currentView !== 'landing' && currentView !== 'login') {
+          setCurrentView('landing');
+        }
+      }
+    });
+    return unsubscribe;
+  }, [currentView]);
+
   // Handle adding custom album
-  const handleCreateAlbum = (title: string, category: string) => {
+  const handleCreateAlbum = async (title: string, category: string, date: string, location: string) => {
+    if (!user) return;
+    
     const defaultCover = category === 'travel' 
       ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
       : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
 
-    const newAlbum: Album = {
-      id: `album_${Date.now()}`,
+    const newAlbumData: Partial<Album> = {
       title,
-      date: 'Fecha de hoy',
-      location: 'Ubicación por definir',
+      date: date,
+      location: location,
       coverImage: defaultCover,
       description: `Álbum de ${category} creado con cariño`,
       imagesCount: 0,
       videosCount: 0,
       companions: [category === 'travel' ? 'Amigos' : 'Familia'],
       members: [
-        { name: 'Maria Garcia', role: 'Creadora del álbum', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true }
+        { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true }
       ],
       chapters: [
         {
@@ -62,121 +88,95 @@ export default function App() {
       conversation: []
     };
 
-    setAlbums([newAlbum, ...albums]);
+    await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+    
     setCurrentView('dashboard');
     setCurrentTab('Home');
   };
 
   // Handle saving a custom memory
-  const handleSaveMemory = (albumId: string, memory: {
+  const handleSaveMemory = async (albumId: string, memory: {
     imageUrl: string;
     caption: string;
     date: string;
     location: string;
     voiceDuration?: string;
   }) => {
-    setAlbums(prevAlbums => prevAlbums.map(album => {
-      if (album.id === albumId) {
-        const newMemory = {
-          id: `m_${Date.now()}`,
-          imageUrl: memory.imageUrl,
-          caption: memory.caption,
-          date: memory.date
-        };
+    const album = albums.find(a => a.id === albumId);
+    if (!album) return;
 
-        const newConversationMessage = {
-          id: `c_${Date.now()}`,
-          author: 'Yo (Ana)',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
-          message: memory.caption,
-          image: memory.imageUrl,
-          date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-        };
+    const newMemory = {
+      id: `m_${Date.now()}`,
+      imageUrl: memory.imageUrl,
+      caption: memory.caption,
+      date: memory.date
+    };
 
-        const conversationWithAudio = memory.voiceDuration ? [
-          ...album.conversation,
-          {
-            id: `c_audio_${Date.now()}`,
-            author: 'Yo (Ana)',
-            avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
-            date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
-            isAudio: true,
-            audioUrl: '#',
-            audioDuration: memory.voiceDuration,
-            message: 'HISTORIA ACTIVA - GRABACIÓN DE VOZ'
-          },
-          newConversationMessage
-        ] : [...album.conversation, newConversationMessage];
+    const newConversationMessage = {
+      id: `c_${Date.now()}`,
+      author: user?.displayName || 'Yo',
+      avatar: user?.photoURL || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
+      message: memory.caption,
+      image: memory.imageUrl,
+      date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+    };
 
-        return {
-          ...album,
-          imagesCount: album.imagesCount + 1,
-          location: memory.location || album.location,
-          memories: [newMemory, ...album.memories],
-          conversation: conversationWithAudio
-        };
-      }
-      return album;
-    }));
+    const conversationWithAudio = memory.voiceDuration ? [
+      ...album.conversation,
+      {
+        id: `c_audio_${Date.now()}`,
+        author: user?.displayName || 'Yo',
+        avatar: user?.photoURL || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
+        date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+        isAudio: true,
+        audioUrl: '#',
+        audioDuration: memory.voiceDuration,
+        message: 'HISTORIA ACTIVA - GRABACIÓN DE VOZ'
+      },
+      newConversationMessage
+    ] : [...album.conversation, newConversationMessage];
+
+    const updatedData = {
+      imagesCount: (album.imagesCount || 0) + 1,
+      location: memory.location || album.location,
+      memories: [newMemory, ...(album.memories || [])],
+      conversation: conversationWithAudio
+    };
+
+    await updateAlbumMutation.mutateAsync({ albumId, data: updatedData });
   };
 
   // Handle accepting AI suggestions
   const handleAcceptSuggestion = (suggestionId: string, customData?: any) => {
-    const suggestion = aiSuggestions.find(s => s.id === suggestionId);
-    if (suggestion) {
-      // If identifying a face, we can add a member or update companions
-      if (suggestion.type === 'face' && customData?.name) {
-        setAlbums(prevAlbums => prevAlbums.map(album => {
-          if (album.id === suggestion.targetAlbum) {
-            return {
-              ...album,
-              members: [
-                ...album.members,
-                {
-                  name: customData.name,
-                  role: 'Familiar Identificado',
-                  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100'
-                }
-              ]
-            };
-          }
-          return album;
-        }));
-      } else if (suggestion.type === 'date') {
-        setAlbums(prevAlbums => prevAlbums.map(album => {
-          if (album.id === suggestion.targetAlbum) {
-            return { ...album, date: '18 de Julio de 2026' };
-          }
-          return album;
-        }));
-      }
-    }
-    setAiSuggestions(prev => prev.filter(s => s.id !== suggestionId));
+    // Left empty for now as requested by the AI feature flags logic
   };
 
   const handleIgnoreSuggestion = (suggestionId: string) => {
     setAiSuggestions(prev => prev.filter(s => s.id !== suggestionId));
   };
 
-  const handleUpdateAlbum = (updatedAlbum: Album) => {
-    setAlbums(prev => prev.map(a => a.id === updatedAlbum.id ? updatedAlbum : a));
+  const handleUpdateAlbum = async (updatedAlbum: Album) => {
+    await updateAlbumMutation.mutateAsync({ albumId: updatedAlbum.id, data: updatedAlbum });
   };
 
   const activeAlbum = albums.find(a => a.id === activeAlbumId);
+
+  if (authLoading) {
+    return <div className="min-h-screen bg-stone-50 flex items-center justify-center">Cargando...</div>;
+  }
 
   const renderView = () => {
     switch (currentView) {
       case 'landing':
         return <LandingPage onStart={() => setCurrentView('login')} />;
       case 'login':
-        return <Login onNavigateToRegister={() => setCurrentView('register')} onLoginSuccess={() => setCurrentView('create-album')} />;
       case 'register':
-        return <Register onNavigateToLogin={() => setCurrentView('login')} />;
+        return <Login onNavigateToRegister={() => setCurrentView('login')} onLoginSuccess={() => setCurrentView('dashboard')} />;
       case 'create-album':
         return (
           <CreateAlbum 
-            onAlbumCreated={(title, category) => {
-              handleCreateAlbum(title, category);
+            onAlbumCreated={(title, category, date, location) => {
+              handleCreateAlbum(title, category, date, location);
             }} 
           />
         );
@@ -225,6 +225,7 @@ export default function App() {
             return (
               <Dashboard 
                 albums={albums}
+                userName={user?.displayName || undefined}
                 onAlbumClick={(id) => {
                   setActiveAlbumId(id);
                   setCurrentView('album-detail');
@@ -255,10 +256,7 @@ export default function App() {
             setCurrentView('dashboard');
           }} 
           onAddMemoryClick={() => setNewMemoryModalOpen(true)}
-          onLogout={() => {
-            setCurrentView('landing');
-            setCurrentTab('Home');
-          }}
+          onLogout={() => auth.signOut()}
         />
       )}
 

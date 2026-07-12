@@ -18,18 +18,18 @@ export const MemoryAssistant = ({ suggestions, albums, onAccept, onIgnore }: Mem
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 md:space-y-8">
       {/* Banner / Header */}
-      <div className="bg-gradient-to-r from-amber-900/10 to-amber-800/5 rounded-3xl p-8 border border-amber-900/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-gradient-to-r from-amber-900/10 to-amber-800/5 rounded-3xl p-6 md:p-8 border border-amber-900/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-amber-900">
-            <Sparkles className="w-6 h-6 animate-pulse" />
-            <span className="font-serif font-bold text-lg">Asistente de Memoria IA</span>
+            <Sparkles className="w-5 h-5 md:w-6 md:h-6 animate-pulse" />
+            <span className="font-serif font-bold text-base md:text-lg">Asistente de Memoria IA</span>
           </div>
-          <h2 className="text-4xl font-serif text-stone-950 font-bold">Organizador Inteligente</h2>
-          <p className="text-stone-600 max-w-xl">La inteligencia artificial te ayuda a recuperar fechas, identificar rostros de familiares y limpiar duplicados. Siempre bajo tu control total.</p>
+          <h2 className="text-3xl md:text-4xl font-serif text-stone-950 font-bold">Organizador Inteligente</h2>
+          <p className="text-sm md:text-base text-stone-600 max-w-xl">La inteligencia artificial te ayuda a recuperar fechas, identificar rostros de familiares y limpiar duplicados. Siempre bajo tu control total.</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 text-center flex flex-col justify-center min-w-[140px]">
+        <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 text-center flex flex-col justify-center min-w-[140px] w-full md:w-auto">
           <span className="text-3xl font-bold font-serif text-amber-900">{suggestions.length}</span>
           <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">Acciones Pendientes</span>
         </div>
@@ -38,10 +38,10 @@ export const MemoryAssistant = ({ suggestions, albums, onAccept, onIgnore }: Mem
       {suggestions.length === 0 ? (
         <div className="text-center p-16 bg-white border border-stone-200 rounded-3xl space-y-4">
           <div className="w-16 h-16 bg-stone-100 text-stone-400 rounded-full flex items-center justify-center mx-auto">
-            <Brain className="w-8 h-8" />
+            <Sparkles className="w-8 h-8 text-amber-900/50" />
           </div>
-          <h3 className="font-serif text-xl font-bold text-stone-900">¡Todo al día!</h3>
-          <p className="text-stone-500 max-w-md mx-auto">Tu asistente de recuerdos ha analizado todas tus fotografías y no hay tareas pendientes. Tus cápsulas de tiempo están perfectamente documentadas.</p>
+          <h3 className="font-serif text-xl font-bold text-stone-900">Análisis Inteligente en Construcción</h3>
+          <p className="text-stone-500 max-w-md mx-auto">La funcionalidad de inteligencia artificial para organizar tus recuerdos, detectar rostros y enriquecer historias está en desarrollo y estará disponible próximamente.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

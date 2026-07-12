@@ -4,19 +4,20 @@ import { Album } from '../types';
 
 interface DashboardProps {
   albums: Album[];
+  userName?: string;
   onAlbumClick: (albumId: string) => void;
   onAddMemoryClick: () => void;
   onNavigateToTab: (tab: string) => void;
 }
 
-export const Dashboard = ({ albums, onAlbumClick, onAddMemoryClick, onNavigateToTab }: DashboardProps) => {
+export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, onNavigateToTab }: DashboardProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
   const filteredAlbums = albums.filter((a) => {
     const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           a.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter === 'all' || a.companions.includes(categoryFilter);
+    const matchesCategory = categoryFilter === 'all' || a.companions?.includes(categoryFilter);
     return matchesSearch && matchesCategory;
   });
 
@@ -26,8 +27,8 @@ export const Dashboard = ({ albums, onAlbumClick, onAddMemoryClick, onNavigateTo
       {/* Dynamic Welcome Greeting Banner */}
       <div className="bg-gradient-to-br from-amber-900/10 via-amber-800/5 to-transparent rounded-3xl p-8 border border-amber-900/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
-          <h2 className="text-5xl font-serif text-stone-950 font-bold">Hola, María</h2>
-          <p className="text-stone-600 max-w-lg">Tienes nuevos recuerdos compartidos de la <span className="font-bold text-stone-900">Familia García</span> esperándote.</p>
+          <h2 className="text-5xl font-serif text-stone-950 font-bold">Hola, {userName ? userName.split(' ')[0] : 'Explorador'}</h2>
+          <p className="text-stone-600 max-w-lg">Tienes tus recuerdos compartidos esperándote.</p>
           
           <div className="flex flex-wrap gap-3 pt-2">
             <button 
@@ -55,10 +56,10 @@ export const Dashboard = ({ albums, onAlbumClick, onAddMemoryClick, onNavigateTo
           </div>
           <div className="space-y-0.5">
             <h4 className="font-bold text-stone-900 text-sm flex items-center gap-1">
-              Organidad Inteligente
+              Inteligencia Artificial
               <span className="w-2 h-2 rounded-full bg-amber-900 block animate-ping"></span>
             </h4>
-            <p className="text-xs text-stone-500">Revisa 3 rostros y fechas sugeridas por el Asistente IA.</p>
+            <p className="text-xs text-stone-500">Descubre sugerencias y organización inteligente próximamente.</p>
           </div>
         </div>
       </div>

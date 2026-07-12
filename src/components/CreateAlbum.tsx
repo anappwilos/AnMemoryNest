@@ -1,13 +1,20 @@
 import React from 'react';
 import { BookOpen, Sparkles, Play, Lock, Users } from 'lucide-react';
 
-export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string, category: string) => void }) => {
+export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string, category: string, date: string, location: string) => void }) => {
   const [title, setTitle] = React.useState('');
   const [category, setCategory] = React.useState('travel');
+  const [date, setDate] = React.useState('');
+  const [location, setLocation] = React.useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAlbumCreated(title || 'Mi Álbum de Recuerdos', category);
+    onAlbumCreated(
+      title || 'Mi Álbum de Recuerdos', 
+      category, 
+      date || new Date().toLocaleDateString(), 
+      location || 'Sin ubicación'
+    );
   };
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-900">
@@ -22,9 +29,7 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string
           <a href="#" className="hover:text-amber-900">Use cases</a>
           <a href="#" className="hover:text-amber-900">Privacy</a>
           <a href="#" className="hover:text-amber-900">Pricing</a>
-          <a href="#" className="hover:text-amber-900">Log in</a>
         </nav>
-        <button className="hidden md:block bg-amber-900 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-amber-800">Crear álbum</button>
       </header>
 
       {/* Main Content */}
@@ -38,6 +43,14 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Nombre del álbum</label>
                     <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Viaje a Italia, Verano 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none" required />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Fecha (Aproximada)</label>
+                    <input type="text" value={date} onChange={(e) => setDate(e.target.value)} placeholder="Ej. Agosto 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none" required />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">Ubicación</label>
+                    <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ej. Roma, Italia" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none" required />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Tipo de historia</label>

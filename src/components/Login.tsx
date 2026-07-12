@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import { Leaf, Eye } from 'lucide-react';
+import { Leaf } from 'lucide-react';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRegister: () => void, onLoginSuccess: () => void }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email === 'root@root.com' && password === 'root') {
+  const handleGoogleLogin = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
       onLoginSuccess();
-    } else {
-      setError('Credenciales inválidas');
+    } catch (err: any) {
+      setError(err.message || 'Error al iniciar sesión con Google');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -28,32 +34,21 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
             <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">Bienvenido de nuevo</h2>
             <p className="text-stone-600 mb-8 text-sm md:text-base">Vuelve a tus álbumes y recuerdos compartidos.</p>
             
-            {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+            {error && <p className="text-red-500 mb-4 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
             
-            <form className="space-y-6" onSubmit={handleLogin}>
-                <div>
-                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Correo electrónico</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
-                </div>
-                <div>
-                    <div className="flex justify-between items-center mb-2">
-                        <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest">Contraseña</label>
-                        <span className="text-[10px] md:text-xs text-stone-500 cursor-pointer hover:text-amber-900">¿Olvidaste tu contraseña?</span>
-                    </div>
-                    <div className="relative">
-                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
-                        <Eye className="absolute right-3 top-3.5 w-5 h-5 text-stone-400" />
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <input type="checkbox" className="rounded text-amber-900 focus:ring-amber-900" />
-                    <label className="text-sm text-stone-600">Recuérdame en este dispositivo</label>
-                </div>
-                <button type="submit" className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 transition">Iniciar sesión</button>
-            </form>
+            <div className="space-y-6">
+                <button 
+                  onClick={handleGoogleLogin} 
+                  disabled={isLoading}
+                  className="w-full bg-white border border-stone-300 text-stone-700 font-bold py-3 rounded-lg hover:bg-stone-50 transition flex items-center justify-center gap-2"
+                >
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                  {isLoading ? 'Iniciando sesión...' : 'Continuar con Google'}
+                </button>
+            </div>
             
             <p className="mt-8 text-sm text-center text-stone-600">
-                ¿No tienes una cuenta? <button onClick={onNavigateToRegister} className="text-amber-900 font-bold hover:underline">Crea una ahora</button>
+                ¿Problemas para acceder? <button className="text-amber-900 font-bold hover:underline">Contacta a soporte</button>
             </p>
         </div>
         

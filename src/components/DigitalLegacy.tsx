@@ -27,16 +27,16 @@ export const DigitalLegacy = () => {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 md:space-y-8">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-stone-900 to-stone-800 text-stone-100 rounded-3xl p-8 border border-stone-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="bg-gradient-to-r from-stone-900 to-stone-800 text-stone-100 rounded-3xl p-6 md:p-8 border border-stone-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-amber-100">
-            <Shield className="w-6 h-6" />
-            <span className="font-serif font-bold text-lg">Cápsula Segura</span>
+            <Shield className="w-5 h-5 md:w-6 md:h-6" />
+            <span className="font-serif font-bold text-base md:text-lg">Cápsula Segura</span>
           </div>
-          <h2 className="text-4xl font-serif text-white font-bold">Legado y Permanencia</h2>
-          <p className="text-stone-300 max-w-xl">Asegura que tus recuerdos sigan siendo accesibles para las futuras generaciones con total privacidad, respeto y dignidad digital.</p>
+          <h2 className="text-3xl md:text-4xl font-serif text-white font-bold">Legado y Permanencia</h2>
+          <p className="text-sm md:text-base text-stone-300 max-w-xl">Asegura que tus recuerdos sigan siendo accesibles para las futuras generaciones con total privacidad, respeto y dignidad digital.</p>
         </div>
       </div>
 
@@ -96,19 +96,22 @@ export const DigitalLegacy = () => {
               </div>
             </form>
           ) : (
-            <div className="space-y-4">
-              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 space-y-2">
-                <p className="text-xs text-stone-500 uppercase tracking-wider font-bold">Designado actualmente</p>
-                <p className="font-serif font-bold text-stone-900 text-lg">{trustedName}</p>
-                <p className="text-sm text-stone-600">{trustedEmail} ({trustedRelation})</p>
+            <>
+              <div className="space-y-4 opacity-50 pointer-events-none">
+                <div className="p-4 bg-stone-50 rounded-2xl border border-stone-100 space-y-2">
+                  <p className="text-xs text-stone-500 uppercase tracking-wider font-bold">Designado actualmente</p>
+                  <p className="font-serif font-bold text-stone-900 text-lg">Sin asignar</p>
+                  <p className="text-sm text-stone-600">--</p>
+                </div>
+                <button 
+                  onClick={() => setIsEditing(true)} 
+                  className="text-xs border border-stone-300 text-stone-700 hover:bg-stone-50 px-4 py-2 rounded-lg font-bold transition"
+                >
+                  Modificar contacto de legado
+                </button>
               </div>
-              <button 
-                onClick={() => setIsEditing(true)} 
-                className="text-xs border border-stone-300 text-stone-700 hover:bg-stone-50 px-4 py-2 rounded-lg font-bold transition"
-              >
-                Modificar contacto de legado
-              </button>
-            </div>
+              <p className="text-xs text-amber-900 font-bold mt-4 italic">Función en desarrollo</p>
+            </>
           )}
         </div>
 
@@ -138,13 +141,10 @@ export const DigitalLegacy = () => {
           </div>
 
           <button 
-            onClick={handleExport} 
-            disabled={isExporting}
-            className={`w-full py-3.5 rounded-xl text-sm font-serif font-bold transition flex items-center justify-center gap-2 ${
-              isExporting ? 'bg-stone-200 text-stone-500 cursor-not-allowed' : 'bg-amber-900 hover:bg-amber-800 text-white shadow-sm'
-            }`}
+            disabled
+            className={`w-full py-3.5 rounded-xl text-sm font-serif font-bold transition flex items-center justify-center gap-2 bg-stone-200 text-stone-500 cursor-not-allowed`}
           >
-            {isExporting ? 'Generando archivo ZIP de seguridad...' : 'Exportar mi Bóveda Completa'}
+            Exportar mi Bóveda Completa (Próximamente)
           </button>
         </div>
 

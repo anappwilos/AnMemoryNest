@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitives
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // User Rules
+    match /users/{userId} {
+      function isValidUser() {
+        return incoming().keys().hasAll(['email', 'name'])
+          && incoming().email is string && incoming().email.size() <= 100
+          && incoming().name is string && incoming().name.size() <= 100;
+      }
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser();
+      allow update: if isSignedIn() && request.auth.uid == userId && isValidUser();
+    }
+
+    // Album Rules
+    match /albums/{albumId} {
+      function isValidAlbum() {
+        return incoming().keys().hasAll(['title', 'ownerId', 'createdAt'])
+          && incoming().title is string && incoming().title.size() <= 100
+          && incoming().ownerId == request.auth.uid
+          && incoming().createdAt == request.time;
+      }
+      function isValidUpdateAlbum() {
+         return incoming().keys().hasAll(['title', 'ownerId', 'createdAt'])
+          && incoming().title is string && incoming().title.size() <= 100
+          && incoming().ownerId == existing().ownerId
+          && incoming().createdAt == existing().createdAt;
+      }
+
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(albumId) && isValidAlbum();
+      allow update: if isSignedIn() && existing().ownerId == request.auth.uid && isValidUpdateAlbum();
+      allow delete: if isSignedIn() && existing().ownerId == request.auth.uid;
+
+      match /members/{memberId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn() && get(/databases/$(database)/documents/albums/$(albumId)).data.ownerId == request.auth.uid;
+      }
+
+      match /memories/{memoryId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn(); // For demo, let's keep it simple for now or check album owner
+      }
+      
+      match /conversations/{conversationId} {
+        allow read: if isSignedIn();
+        allow write: if isSignedIn();
+      }
+    }
+  }
+}

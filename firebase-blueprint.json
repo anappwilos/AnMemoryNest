@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "name"]
+    },
+    "Album": {
+      "title": "Album",
+      "description": "An album containing memories",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 100 },
+        "date": { "type": "string", "maxLength": 50 },
+        "location": { "type": "string", "maxLength": 100 },
+        "coverImage": { "type": "string", "maxLength": 500 },
+        "description": { "type": "string", "maxLength": 500 },
+        "quote": { "type": "string", "maxLength": 200 },
+        "quoteAuthor": { "type": "string", "maxLength": 50 },
+        "imagesCount": { "type": "number" },
+        "videosCount": { "type": "number" },
+        "companions": { "type": "array" },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "ownerId", "createdAt"]
+    },
+    "AlbumMember": {
+      "title": "Album Member",
+      "description": "A member associated with an album",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "maxLength": 50 },
+        "avatar": { "type": "string", "maxLength": 500 },
+        "userId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["name", "role", "userId"]
+    },
+    "Memory": {
+      "title": "Memory",
+      "description": "A memory in an album",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "caption": { "type": "string", "maxLength": 500 },
+        "date": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" },
+        "ownerId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["imageUrl", "caption", "ownerId", "createdAt"]
+    },
+    "Conversation": {
+      "title": "Conversation Message",
+      "description": "A message in the album conversation",
+      "type": "object",
+      "properties": {
+        "author": { "type": "string", "maxLength": 100 },
+        "avatar": { "type": "string", "maxLength": 500 },
+        "message": { "type": "string", "maxLength": 1000 },
+        "image": { "type": "string", "maxLength": 500 },
+        "date": { "type": "string", "maxLength": 50 },
+        "audioUrl": { "type": "string", "maxLength": 500 },
+        "audioDuration": { "type": "string", "maxLength": 20 },
+        "isAudio": { "type": "boolean" },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["author", "ownerId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Users"
+    },
+    "albums/{albumId}": {
+      "schema": { "$ref": "#/entities/Album" },
+      "description": "Albums"
+    },
+    "albums/{albumId}/members/{memberId}": {
+      "schema": { "$ref": "#/entities/AlbumMember" },
+      "description": "Members of the album"
+    },
+    "albums/{albumId}/memories/{memoryId}": {
+      "schema": { "$ref": "#/entities/Memory" },
+      "description": "Memories of the album"
+    },
+    "albums/{albumId}/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "Conversation messages of the album"
+    }
+  }
+}
