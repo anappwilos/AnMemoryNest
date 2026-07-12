@@ -4,6 +4,7 @@ import { Dashboard } from './components/Dashboard';
 import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
+import { CreateAlbum } from './components/CreateAlbum';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
@@ -16,6 +17,8 @@ export default function App() {
         return <Login onNavigateToRegister={() => setCurrentView('register')} />;
       case 'register':
         return <Register onNavigateToLogin={() => setCurrentView('login')} />;
+      case 'create-album':
+        return <CreateAlbum />;
       case 'dashboard':
         return <Dashboard />;
       case 'create':
@@ -27,7 +30,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {(currentView !== 'landing' && currentView !== 'login' && currentView !== 'register') && <Header onViewChange={setCurrentView} />}
+      {(currentView !== 'landing' && currentView !== 'login' && currentView !== 'register' && currentView !== 'create-album') && <Header onViewChange={setCurrentView} />}
       {renderView()}
     </div>
   );
