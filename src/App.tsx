@@ -5,10 +5,12 @@ import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { CreateAlbum } from './components/CreateAlbum';
+import { AlbumDetail } from './components/AlbumDetail';
 import { Footer } from './components/Footer';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
+  const [viewedAlbum, setViewedAlbum] = useState<string | null>(null);
 
   const renderView = () => {
     switch (currentView) {
@@ -20,8 +22,10 @@ export default function App() {
         return <Register onNavigateToLogin={() => setCurrentView('login')} />;
       case 'create-album':
         return <CreateAlbum onAlbumCreated={() => setCurrentView('dashboard')} />;
+      case 'album-detail':
+        return <AlbumDetail />;
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onAlbumClick={() => setCurrentView('album-detail')} />;
       case 'create':
         return <div className="p-8 text-center text-stone-600">Crear nuevo recuerdo (Próximamente)</div>;
       default:

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera, BookOpen } from 'lucide-react';
 
-export const Dashboard = () => {
+export const Dashboard = ({ onAlbumClick }: { onAlbumClick: () => void }) => {
   return (
     <main className="p-8 max-w-7xl mx-auto">
       <h2 className="text-4xl font-serif text-stone-950 mb-2">Hola, María</h2>
@@ -27,7 +27,7 @@ export const Dashboard = () => {
             { title: "Interrail Verano 2026", date: "Julio 2026 · Praga, República Checa" },
             { title: "Navidad en el Pueblo", date: "Diciembre 2025 · Zamora, España" }
         ].map((album, i) => (
-          <div key={i} className="group cursor-pointer">
+          <div key={i} className="group cursor-pointer" onClick={onAlbumClick}>
             <div className="aspect-[4/3] bg-stone-200 rounded-lg mb-3 shadow-sm group-hover:shadow-md transition-shadow overflow-hidden">
                 <img src={`https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400`} alt={album.title} className="w-full h-full object-cover" />
             </div>
