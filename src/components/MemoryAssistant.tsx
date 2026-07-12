@@ -12,6 +12,28 @@ interface MemoryAssistantProps {
 export const MemoryAssistant = ({ suggestions, albums, onAccept, onIgnore }: MemoryAssistantProps) => {
   const [activeSuggestionId, setActiveSuggestionId] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [aiAnswer, setAiAnswer] = useState('');
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const askAi = async () => {
+    if (!aiQuestion) return;
+    setIsAiLoading(true);
+    setAiAnswer('');
+    try {
+      const response = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: aiQuestion }),
+      });
+      const data = await response.json();
+      setAiAnswer(data.answer || "No obtuve una respuesta clara.");
+    } catch (e) {
+      setAiAnswer("Error al conectar con la IA.");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   const getAlbumTitle = (id: string) => {
     return albums.find(a => a.id === id)?.title || id;
@@ -29,9 +51,22 @@ export const MemoryAssistant = ({ suggestions, albums, onAccept, onIgnore }: Mem
           <h2 className="text-3xl md:text-4xl font-serif text-stone-950 font-bold">Organizador Inteligente</h2>
           <p className="text-sm md:text-base text-stone-600 max-w-xl">La inteligencia artificial te ayuda a recuperar fechas, identificar rostros de familiares y limpiar duplicados. Siempre bajo tu control total.</p>
         </div>
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 text-center flex flex-col justify-center min-w-[140px] w-full md:w-auto">
-          <span className="text-3xl font-bold font-serif text-amber-900">{suggestions.length}</span>
-          <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">Acciones Pendientes</span>
+        
+        {/* New AI Query UI */}
+        <div className="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 w-full md:w-80">
+            <input 
+              type="text"
+              value={aiQuestion}
+              onChange={(e) => setAiQuestion(e.target.value)}
+              placeholder="¿Qué quieres saber de tus recuerdos?"
+              className="w-full bg-stone-50 border-none rounded-lg px-3 py-2 text-sm mb-2"
+            />
+            <button onClick={askAi} disabled={isAiLoading} className="w-full bg-primary text-white text-xs font-bold py-2 rounded-lg">
+                {isAiLoading ? 'Pensando...' : 'Preguntar a la IA'}
+            </button>
+            {aiAnswer && (
+                <p className="mt-3 text-xs text-stone-700 bg-stone-50 p-2 rounded-lg">{aiAnswer}</p>
+            )}
         </div>
       </div>
 
