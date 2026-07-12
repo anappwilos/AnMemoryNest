@@ -1,7 +1,11 @@
 import React from 'react';
 import { BookOpen, Sparkles, Play, Lock, Users } from 'lucide-react';
 
-export const CreateAlbum = () => {
+export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: () => void }) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onAlbumCreated();
+  };
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-900">
       {/* Header */}
@@ -27,15 +31,18 @@ export const CreateAlbum = () => {
             <h2 className="text-6xl font-serif text-stone-950 mb-6">Empieza tu historia</h2>
             <p className="text-lg text-stone-600 mb-8">Define los cimientos de tu archivo digital. Es el primer paso para preservar lo que importa.</p>
             
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Nombre del álbum</label>
-                    <input type="text" placeholder="Ej. Viaje a Italia, Verano 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                    <input type="text" placeholder="Ej. Viaje a Italia, Verano 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Tipo de historia</label>
-                    <select className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900">
-                        <option>Selecciona una categoría</option>
+                    <select className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="travel">Viajes</option>
+                        <option value="family">Familia</option>
+                        <option value="other">Otro</option>
                     </select>
                 </div>
                 <button type="submit" className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 flex items-center justify-center gap-2">

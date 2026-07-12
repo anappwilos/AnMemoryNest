@@ -5,6 +5,7 @@ import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { CreateAlbum } from './components/CreateAlbum';
+import { Footer } from './components/Footer';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('landing');
@@ -18,7 +19,7 @@ export default function App() {
       case 'register':
         return <Register onNavigateToLogin={() => setCurrentView('login')} />;
       case 'create-album':
-        return <CreateAlbum />;
+        return <CreateAlbum onAlbumCreated={() => setCurrentView('dashboard')} />;
       case 'dashboard':
         return <Dashboard />;
       case 'create':
@@ -29,9 +30,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen bg-stone-50 flex flex-col">
       {(currentView !== 'landing' && currentView !== 'login' && currentView !== 'register' && currentView !== 'create-album') && <Header onViewChange={setCurrentView} />}
-      {renderView()}
+      <div className="flex-grow">
+        {renderView()}
+      </div>
+      {(currentView !== 'landing' && currentView !== 'login' && currentView !== 'register' && currentView !== 'create-album') && <Footer />}
     </div>
   );
 }
