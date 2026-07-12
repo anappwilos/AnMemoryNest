@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Epilogue:ital,wght@0,400;1,400&display=swap');
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-script: "Epilogue", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: #7c3821; /* Terracota */
+  --color-primary-container: #9a4f36;
+  --color-secondary: #53634f; /* Sage */
+  --color-background-warm: #FBF9F7; /* Papel crema */
+}
+
+@layer base {
+  body {
+    @apply bg-background-warm text-[#1f1b19] font-sans;
+  }
+}
