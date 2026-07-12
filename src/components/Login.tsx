@@ -47,8 +47,8 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
                 <h1 className="text-lg font-serif font-bold text-primary">MemoryNest</h1>
             </div>
             
-            <h2 className="text-2xl font-serif text-stone-900 mb-2">Bienvenido</h2>
-            <p className="text-stone-600 mb-6 text-sm">Inicia sesión para continuar</p>
+            {/* <h2 className="text-2xl font-serif text-stone-900 mb-2">Iniciar sesión</h2> */}
+            {/* <p className="text-stone-600 mb-6 text-sm">INICIAR SESION</p> */}
             
             {error && <p className="text-red-600 mb-4 text-xs bg-red-50 p-3 rounded-lg">{error}</p>}
             
@@ -92,7 +92,7 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
         
         {/* Image Side */}
         <div className="w-full md:w-1/2 bg-stone-100 relative hidden md:block">
-            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800" alt="Family" className="w-full h-full object-cover" />
+            <img src="https://images.unsplash.com/photo-1595981234969-8259b94fde88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Family" className="w-full h-full object-cover" />
         </div>
       </div>
     </div>
