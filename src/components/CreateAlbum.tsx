@@ -1,15 +1,18 @@
 import React from 'react';
 import { BookOpen, Sparkles, Play, Lock, Users } from 'lucide-react';
 
-export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: () => void }) => {
+export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string, category: string) => void }) => {
+  const [title, setTitle] = React.useState('');
+  const [category, setCategory] = React.useState('travel');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAlbumCreated();
+    onAlbumCreated(title || 'Mi Álbum de Recuerdos', category);
   };
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-900">
       {/* Header */}
-      <header className="px-8 py-6 flex items-center justify-between border-b border-stone-200">
+      <header className="px-8 py-6 flex items-center justify-between border-b border-stone-200 bg-white">
         <div className="flex items-center gap-2">
             <BookOpen className="w-8 h-8 text-amber-900" />
             <h1 className="text-2xl font-serif font-bold text-amber-900">AnMemoryNest</h1>
@@ -25,8 +28,8 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: () => void }) 
       </header>
 
       {/* Main Content */}
-      <main className="px-8 py-16 max-w-7xl mx-auto flex gap-12">
-        <div className="w-1/2">
+      <main className="px-8 py-16 max-w-7xl mx-auto flex flex-col md:flex-row gap-12">
+        <div className="md:w-1/2">
             <p className="text-xs font-bold tracking-widest text-amber-900 uppercase mb-4">Paso 1 de 2 · Crea tu primer álbum</p>
             <h2 className="text-6xl font-serif text-stone-950 mb-6">Empieza tu historia</h2>
             <p className="text-lg text-stone-600 mb-8">Define los cimientos de tu archivo digital. Es el primer paso para preservar lo que importa.</p>
@@ -34,18 +37,17 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: () => void }) 
             <form className="space-y-6" onSubmit={handleSubmit}>
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Nombre del álbum</label>
-                    <input type="text" placeholder="Ej. Viaje a Italia, Verano 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
+                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej. Viaje a Italia, Verano 2026" className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none" required />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-stone-700 mb-2">Tipo de historia</label>
-                    <select className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required>
-                        <option value="">Selecciona una categoría</option>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-stone-100 border border-stone-200 rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none" required>
                         <option value="travel">Viajes</option>
                         <option value="family">Familia</option>
                         <option value="other">Otro</option>
                     </select>
                 </div>
-                <button type="submit" className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 flex items-center justify-center gap-2">
+                <button type="submit" className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 flex items-center justify-center gap-2 transition cursor-pointer">
                     Crear álbum <span>&gt;</span>
                 </button>
                 <p className="text-sm text-stone-500 text-center">No te preocupes, podrás cambiar estos detalles más tarde.</p>
