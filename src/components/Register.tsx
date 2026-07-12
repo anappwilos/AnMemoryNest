@@ -1,7 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Leaf, Eye } from 'lucide-react';
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      setError('');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, { displayName: name });
+      // App.tsx handles navigation on auth state change
+    } catch (err: any) {
+      setError(err.message || 'Error al crear la cuenta');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      // App.tsx handles navigation on auth state change
+    } catch (err: any) {
+      setError(err.message || 'Error al registrar con Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
       <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl h-auto md:h-[700px]">
@@ -26,37 +68,52 @@ export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void 
             <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">Crea tu cuenta</h2>
             <p className="text-stone-600 mb-8 text-sm md:text-base">Empieza a preservar tus recuerdos más valiosos en un espacio privado y compartido.</p>
             
-            <form className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="flex-1">
-                        <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Nombre</label>
-                        <input type="text" placeholder="Tu nombre" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
-                    </div>
-                    <div className="flex-1">
-                        <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Apellidos</label>
-                        <input type="text" placeholder="Tus apellidos" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
-                    </div>
+            {error && <p className="text-red-500 mb-4 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
+            
+            <form className="space-y-4" onSubmit={handleRegister}>
+                <div>
+                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Nombre completo</label>
+                    <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                 </div>
                 <div>
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Correo electrónico</label>
-                    <input type="email" placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                 </div>
                 <div>
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Contraseña</label>
                     <div className="relative">
-                        <input type="password" placeholder="Crea una contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Crea una contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                         <Eye className="absolute right-3 top-3.5 w-5 h-5 text-stone-400" />
                     </div>
                 </div>
                 <div>
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Confirmar contraseña</label>
                     <div className="relative">
-                        <input type="password" placeholder="Repite tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                        <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repite tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                         <Eye className="absolute right-3 top-3.5 w-5 h-5 text-stone-400" />
                     </div>
                 </div>
-                <button type="submit" className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 transition">Crear mi cuenta</button>
+                <button type="submit" disabled={isLoading} className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 transition">
+                  {isLoading ? 'Creando cuenta...' : 'Crear mi cuenta'}
+                </button>
             </form>
+            
+            <div className="mt-6 flex items-center gap-4">
+                <div className="flex-1 h-px bg-stone-200"></div>
+                <span className="text-stone-400 text-xs uppercase font-bold">O</span>
+                <div className="flex-1 h-px bg-stone-200"></div>
+            </div>
+
+            <div className="mt-6 space-y-6">
+                <button 
+                  onClick={handleGoogleRegister} 
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-3 bg-white border border-stone-200 text-stone-700 font-bold py-3 rounded-lg hover:bg-stone-50 transition"
+                >
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                  {isLoading ? 'Creando...' : 'Continuar con Google'}
+                </button>
+            </div>
             
             <p className="mt-8 text-sm text-center text-stone-600">
                 ¿Ya tienes una cuenta? <button onClick={onNavigateToLogin} className="text-amber-900 font-bold hover:underline">Iniciar sesión</button>

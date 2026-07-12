@@ -1,11 +1,27 @@
 import React, { useState } from 'react';
-import { Leaf } from 'lucide-react';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { Leaf, Eye } from 'lucide-react';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 
 export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRegister: () => void, onLoginSuccess: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      setError('');
+      await signInWithEmailAndPassword(auth, email, password);
+      onLoginSuccess();
+    } catch (err: any) {
+      setError(err.message || 'Error al iniciar sesión');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -36,19 +52,43 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
             
             {error && <p className="text-red-500 mb-4 text-sm bg-red-50 p-3 rounded-lg">{error}</p>}
             
-            <div className="space-y-6">
+            <form className="space-y-6" onSubmit={handleEmailLogin}>
+                <div>
+                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Correo electrónico</label>
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
+                </div>
+                <div>
+                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Contraseña</label>
+                    <div className="relative">
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
+                        <Eye className="absolute right-3 top-3.5 w-5 h-5 text-stone-400" />
+                    </div>
+                </div>
+                
+                <button type="submit" disabled={isLoading} className="w-full bg-amber-900 text-white font-bold py-3 rounded-lg hover:bg-amber-800 transition">
+                    {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
+                </button>
+            </form>
+            
+            <div className="mt-6 flex items-center gap-4">
+                <div className="flex-1 h-px bg-stone-200"></div>
+                <span className="text-stone-400 text-xs uppercase font-bold">O</span>
+                <div className="flex-1 h-px bg-stone-200"></div>
+            </div>
+
+            <div className="mt-6 space-y-6">
                 <button 
                   onClick={handleGoogleLogin} 
                   disabled={isLoading}
                   className="w-full bg-white border border-stone-300 text-stone-700 font-bold py-3 rounded-lg hover:bg-stone-50 transition flex items-center justify-center gap-2"
                 >
                   <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-                  {isLoading ? 'Iniciando sesión...' : 'Continuar con Google'}
+                  {isLoading ? 'Iniciando...' : 'Continuar con Google'}
                 </button>
             </div>
             
             <p className="mt-8 text-sm text-center text-stone-600">
-                ¿Problemas para acceder? <button className="text-amber-900 font-bold hover:underline">Contacta a soporte</button>
+                ¿No tienes cuenta? <button onClick={onNavigateToRegister} className="text-amber-900 font-bold hover:underline">Crea una ahora</button>
             </p>
         </div>
         

@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { Dashboard } from './components/Dashboard';
 import { LandingPage } from './components/LandingPage';
 import { Login } from './components/Login';
+import { Register } from './components/Register';
 import { CreateAlbum } from './components/CreateAlbum';
 import { AlbumDetail } from './components/AlbumDetail';
 import { Footer } from './components/Footer';
@@ -46,7 +47,7 @@ export default function App() {
           setCurrentView('dashboard');
         }
       } else {
-        if (currentView !== 'landing' && currentView !== 'login') {
+        if (currentView !== 'landing' && currentView !== 'login' && currentView !== 'register') {
           setCurrentView('landing');
         }
       }
@@ -170,8 +171,9 @@ export default function App() {
       case 'landing':
         return <LandingPage onStart={() => setCurrentView('login')} />;
       case 'login':
+        return <Login onNavigateToRegister={() => setCurrentView('register')} onLoginSuccess={() => setCurrentView('dashboard')} />;
       case 'register':
-        return <Login onNavigateToRegister={() => setCurrentView('login')} onLoginSuccess={() => setCurrentView('dashboard')} />;
+        return <Register onNavigateToLogin={() => setCurrentView('login')} />;
       case 'create-album':
         return (
           <CreateAlbum 
