@@ -31,6 +31,7 @@ export default function App() {
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
   const [activeAlbumId, setActiveAlbumId] = useState<string | null>(null);
   const [newMemoryModalOpen, setNewMemoryModalOpen] = useState(false);
+  const [demoAlbumsCreated, setDemoAlbumsCreated] = useState(false);
 
   const albumsQuery = useAlbums(user?.uid);
   const createAlbumMutation = useCreateAlbum();
@@ -54,6 +55,64 @@ export default function App() {
     });
     return unsubscribe;
   }, [currentView]);
+
+  useEffect(() => {
+    if (user && !authLoading && !albumsQuery.isLoading && albums.length === 0 && !demoAlbumsCreated) {
+      setDemoAlbumsCreated(true);
+      createDefaultAlbums(user);
+    }
+  }, [user, authLoading, albums, albumsQuery.isLoading, demoAlbumsCreated]);
+
+  const createDefaultAlbums = async (user: User) => {
+    const demos = [
+      {
+        title: 'Viaje Interrail 2026',
+        category: 'travel',
+        date: '2026-06-01',
+        location: 'Europa'
+      },
+      {
+        title: `Familia ${user.displayName || ''}`,
+        category: 'family',
+        date: '2026-01-01',
+        location: 'Casa'
+      }
+    ];
+
+    for (const demo of demos) {
+      const defaultCover = demo.category === 'travel' 
+        ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
+        : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
+
+      const newAlbumData: Partial<Album> = {
+        title: demo.title,
+        date: demo.date,
+        location: demo.location,
+        coverImage: defaultCover,
+        description: `Álbum de ${demo.category} creado automáticamente`,
+        imagesCount: 0,
+        videosCount: 0,
+        companions: [demo.category === 'travel' ? 'Amigos' : 'Familia'],
+        members: [
+          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true }
+        ],
+        chapters: [
+          {
+            id: `ch_${Date.now()}_${demo.title}`,
+            chapterNum: 'Capítulo I',
+            title: 'Un nuevo amanecer para nuestras historias',
+            text: 'Comenzamos esta cápsula colectiva de recuerdos hoy.',
+            image: defaultCover,
+            imageSide: 'right'
+          }
+        ],
+        memories: [],
+        conversation: []
+      };
+
+      await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+    }
+  };
 
   // Handle adding custom album
   const handleCreateAlbum = async (title: string, category: string, date: string, location: string) => {

@@ -63,9 +63,9 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               <h3 className="font-serif text-2xl text-stone-900 font-bold">Galería de Recuerdos</h3>
               <button 
                 onClick={onAddMemoryClick} 
-                className="bg-amber-900 text-white hover:bg-amber-800 text-xs font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 transition"
+                className="bg-primary text-white hover:opacity-90 text-xs font-bold px-4 py-2 rounded-md flex items-center gap-2 transition"
               >
-                <Camera className="w-4 h-4" /> Añadir Recuerdo
+                <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
               </button>
             </div>
             
@@ -73,13 +73,13 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               {album.memories.map((m) => (
                 <div 
                   key={m.id} 
-                  className="group cursor-pointer bg-white p-3 rounded-2xl border border-stone-200 shadow-sm hover:shadow transition"
+                  className="group cursor-pointer bg-white p-2 rounded-xl border border-stone-100 shadow-sm hover:shadow transition"
                   onClick={() => setSelectedPhoto(m.imageUrl)}
                 >
-                  <div className="aspect-square overflow-hidden rounded-xl bg-stone-100 relative">
+                  <div className="aspect-square overflow-hidden rounded-lg bg-stone-100 relative">
                     <img src={m.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt={m.caption} />
                   </div>
-                  <p className="text-xs text-stone-700 font-medium mt-2 line-clamp-2 italic">"{m.caption}"</p>
+                  <p className="text-[10px] text-stone-600 font-medium mt-2 line-clamp-2 italic">"{m.caption}"</p>
                 </div>
               ))}
             </div>
@@ -89,29 +89,29 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
       case 'Personas':
         return (
           <div className="w-full space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-6">
+            <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm space-y-6">
               <div>
                 <h3 className="font-serif text-2xl text-stone-950 font-bold">Álbum Colaborativo</h3>
-                <p className="text-sm text-stone-500">Familiares y amigos autorizados para ver y aportar a este álbum.</p>
+                <p className="text-sm text-stone-500">Familiares y amigos autorizados para ver y aportar.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {album.members.map((m, i) => (
-                  <div key={i} className="flex items-center gap-4 p-3 bg-stone-50 rounded-2xl border border-stone-100">
+                  <div key={i} className="flex items-center gap-4 p-3 bg-stone-50 rounded-xl border border-stone-100">
                     <div className="relative">
-                      <img src={m.avatar} alt={m.name} className="w-12 h-12 rounded-full object-cover" />
+                      <img src={m.avatar} alt={m.name} className="w-10 h-10 rounded-full object-cover" />
                       {m.online && (
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-white rounded-full"></span>
                       )}
                     </div>
                     <div>
                       <h4 className="font-bold text-stone-900 text-sm flex items-center gap-1.5">
                         {m.name}
                         {m.typing && (
-                          <span className="text-[10px] text-amber-900 animate-pulse font-normal">Escribiendo...</span>
+                          <span className="text-[10px] text-primary animate-pulse font-normal">Escribiendo...</span>
                         )}
                       </h4>
-                      <p className="text-xs text-stone-500">{m.role}</p>
+                      <p className="text-[10px] text-stone-500">{m.role}</p>
                     </div>
                   </div>
                 ))}
@@ -119,25 +119,25 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
 
               {/* Invitation option inside Personas tab */}
               <div className="pt-4 border-t border-stone-100">
-                <h4 className="font-bold text-stone-800 text-sm mb-2">¿Quieres invitar a alguien más?</h4>
+                <h4 className="font-bold text-stone-800 text-xs mb-2">¿Invitar a alguien más?</h4>
                 <div className="flex gap-2">
                   <input 
                     type="email" 
                     placeholder="correo@familiar.com" 
-                    className="flex-grow bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-amber-900 focus:outline-none" 
+                    className="flex-grow bg-stone-50 border border-stone-100 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none" 
                   />
                   <button 
                     onClick={() => {
                       setInviteSuccess(true);
                       setTimeout(() => setInviteSuccess(false), 3000);
                     }}
-                    className="bg-amber-900 text-white text-xs font-bold px-4 py-2 rounded-lg"
+                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-md"
                   >
                     Invitar
                   </button>
                 </div>
                 {inviteSuccess && (
-                  <p className="text-xs text-emerald-800 font-bold mt-2">✓ ¡Invitación enviada con éxito!</p>
+                  <p className="text-[10px] text-emerald-800 font-bold mt-2">✓ ¡Invitación enviada!</p>
                 )}
               </div>
             </div>
@@ -149,39 +149,39 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
           <div className="w-full grid md:grid-cols-3 gap-8">
             
             {/* Conversation Flow */}
-            <div className="md:col-span-2 space-y-6 flex flex-col justify-between h-[550px] bg-white border border-stone-200 rounded-3xl p-6 shadow-sm">
+            <div className="md:col-span-2 space-y-6 flex flex-col justify-between h-[550px] bg-white border border-stone-100 rounded-2xl p-6 shadow-sm">
               <div className="overflow-y-auto space-y-4 flex-grow pr-2">
-                <span className="text-xs font-bold text-stone-400 block text-center uppercase tracking-widest my-2">Historial de Conversación</span>
+                <span className="text-[10px] font-bold text-stone-400 block text-center uppercase tracking-widest my-2">Historial</span>
                 
                 {album.conversation.map((c) => (
                   <div key={c.id} className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <img src={c.avatar} alt={c.author} className="w-6 h-6 rounded-full object-cover" />
+                      <img src={c.avatar} alt={c.author} className="w-5 h-5 rounded-full object-cover" />
                       <span className="text-xs font-bold text-stone-800">{c.author}</span>
-                      <span className="text-[10px] text-stone-400">{c.date}</span>
+                      <span className="text-[9px] text-stone-400">{c.date}</span>
                     </div>
 
-                    <div className="pl-8">
+                    <div className="pl-7">
                       {c.isAudio ? (
-                        <div className="bg-amber-900 text-white p-3.5 rounded-2xl border border-amber-950/10 shadow-sm flex items-center gap-3 max-w-sm">
-                          <button className="w-8 h-8 rounded-full bg-white text-amber-900 flex items-center justify-center font-bold text-sm shadow">
+                        <div className="bg-primary text-white p-3 rounded-xl border border-primary/20 shadow-sm flex items-center gap-3 max-w-sm">
+                          <button className="w-7 h-7 rounded-full bg-white text-primary flex items-center justify-center font-bold text-xs shadow">
                             ▶
                           </button>
                           <div className="flex-grow">
-                            <p className="text-xs font-bold uppercase tracking-wider">{c.message}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-wider">{c.message}</p>
                             <div className="flex items-center gap-1 mt-1">
-                              <span className="block w-20 h-1 bg-white/40 rounded overflow-hidden">
+                              <span className="block w-16 h-0.5 bg-white/40 rounded overflow-hidden">
                                 <span className="block w-1/3 h-full bg-white"></span>
                               </span>
-                              <span className="text-[10px] opacity-90 font-mono">{c.audioDuration}</span>
+                              <span className="text-[9px] opacity-90 font-mono">{c.audioDuration}</span>
                             </div>
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-stone-100 text-stone-800 p-3 rounded-2xl text-sm max-w-md shadow-sm">
+                        <div className="bg-stone-50 text-stone-800 p-3 rounded-xl text-sm max-w-md shadow-sm">
                           <p>{c.message}</p>
                           {c.image && (
-                            <img src={c.image} alt="shared" className="mt-2 rounded-lg max-h-36 object-cover" />
+                            <img src={c.image} alt="shared" className="mt-2 rounded-md max-h-36 object-cover" />
                           )}
                         </div>
                       )}
@@ -197,19 +197,19 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
                     type="button" 
                     onClick={handleSendPresetAudio}
                     title="Enviar nota de voz demo" 
-                    className="p-2.5 bg-amber-50 hover:bg-amber-100 text-amber-950 rounded-xl border border-amber-900/10 transition"
+                    className="p-2.5 bg-stone-50 hover:bg-stone-100 text-primary rounded-md border border-stone-100 transition"
                   >
-                    <Mic className="w-5 h-5" />
+                    <Mic className="w-4 h-4" />
                   </button>
                   <input 
                     type="text" 
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
-                    placeholder="Escribe un relato o responde al grupo familiar..." 
-                    className="flex-grow bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-amber-900 focus:outline-none" 
+                    placeholder="Escribe un relato..." 
+                    className="flex-grow bg-stone-50 border border-stone-100 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none" 
                   />
-                  <button type="submit" className="p-2.5 bg-amber-900 hover:bg-amber-800 text-white rounded-xl shadow transition">
-                    <Send className="w-5 h-5" />
+                  <button type="submit" className="p-2.5 bg-primary hover:opacity-90 text-white rounded-md shadow transition">
+                    <Send className="w-4 h-4" />
                   </button>
                 </div>
               </form>
@@ -218,26 +218,26 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
             {/* Conversation Sidebar */}
             <div className="space-y-6">
               {/* Online members */}
-              <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm space-y-4">
-                <h4 className="font-serif font-bold text-stone-900">Familia en línea</h4>
-                <div className="space-y-3">
+              <div className="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm space-y-3">
+                <h4 className="font-serif font-bold text-stone-900 text-sm">Familia en línea</h4>
+                <div className="space-y-2">
                   {album.members.map((m, idx) => (
-                    <div key={idx} className="flex justify-between items-center text-xs">
+                    <div key={idx} className="flex justify-between items-center text-[10px]">
                       <div className="flex items-center gap-2">
                         <div className="relative">
-                          <img src={m.avatar} alt={m.name} className="w-7 h-7 rounded-full object-cover" />
+                          <img src={m.avatar} alt={m.name} className="w-6 h-6 rounded-full object-cover" />
                           {m.online && (
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border border-white rounded-full"></span>
+                            <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border border-white rounded-full"></span>
                           )}
                         </div>
                         <span className="font-bold text-stone-700">{m.name}</span>
                       </div>
                       {m.typing ? (
-                        <span className="text-[10px] text-amber-900 font-bold uppercase animate-pulse">Escribiendo...</span>
+                        <span className="text-[9px] text-primary font-bold uppercase animate-pulse">Escribiendo...</span>
                       ) : m.online ? (
-                        <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded-full uppercase">Activo</span>
+                        <span className="text-[9px] text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm uppercase">Activo</span>
                       ) : (
-                        <span className="text-[10px] text-stone-400">Inactivo</span>
+                        <span className="text-[9px] text-stone-400">Inactivo</span>
                       )}
                     </div>
                   ))}
@@ -245,13 +245,13 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               </div>
 
               {/* Key Highlights mini gallery */}
-              <div className="bg-white border border-stone-200 rounded-3xl p-5 shadow-sm space-y-3">
-                <h4 className="font-serif font-bold text-stone-900">Momentos destacados</h4>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm space-y-2">
+                <h4 className="font-serif font-bold text-stone-900 text-sm">Destacados</h4>
+                <div className="grid grid-cols-2 gap-1.5">
                   {album.memories.slice(0, 3).map((m, idx) => (
-                    <img key={idx} src={m.imageUrl} alt="highlight" className="aspect-square object-cover rounded-lg w-full" />
+                    <img key={idx} src={m.imageUrl} alt="highlight" className="aspect-square object-cover rounded-md w-full" />
                   ))}
-                  <button onClick={() => setActiveTab('Recuerdos')} className="aspect-square bg-stone-50 hover:bg-stone-100 rounded-lg flex items-center justify-center font-bold text-amber-900 border border-dashed border-stone-300">
+                  <button onClick={() => setActiveTab('Recuerdos')} className="aspect-square bg-stone-50 hover:bg-stone-100 rounded-md flex items-center justify-center font-bold text-primary border border-dashed border-stone-200">
                     +
                   </button>
                 </div>
@@ -268,15 +268,15 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
             {/* Chapters and quote (Left) */}
             <div className="md:w-2/3 space-y-12">
               {album.chapters.map((ch) => (
-                <section key={ch.id} className="space-y-4">
-                  <p className="text-xs font-bold text-stone-500 uppercase tracking-widest">{ch.chapterNum}</p>
-                  <h2 className="text-3xl font-serif font-bold text-stone-950">{ch.title}</h2>
+                <section key={ch.id} className="space-y-3">
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{ch.chapterNum}</p>
+                  <h2 className="text-2xl font-serif font-bold text-stone-950">{ch.title}</h2>
                   
                   <div className={`flex flex-col md:flex-row gap-6 ${ch.imageSide === 'left' ? 'md:flex-row-reverse' : ''}`}>
                     <p className="text-stone-700 leading-relaxed text-sm flex-grow">
                       {ch.text}
                     </p>
-                    <div className="md:w-1/3 aspect-[3/4] rounded-2xl overflow-hidden shadow-md border border-stone-200">
+                    <div className="md:w-1/3 aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-stone-100">
                       <img src={ch.image} className="w-full h-full object-cover" alt={ch.title} />
                     </div>
                   </div>
@@ -284,24 +284,23 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               ))}
 
               {album.quote && (
-                <blockquote className="text-2xl font-serif text-amber-950 italic text-center py-12 border-y border-stone-200">
+                <blockquote className="text-xl font-serif text-primary italic text-center py-10 border-y border-stone-100">
                   "{album.quote}"
                   {album.quoteAuthor && (
-                    <footer className="text-xs not-italic mt-4 text-stone-500 uppercase tracking-widest">— {album.quoteAuthor}</footer>
+                    <footer className="text-[10px] not-italic mt-3 text-stone-400 uppercase tracking-widest">— {album.quoteAuthor}</footer>
                   )}
                 </blockquote>
               )}
 
               {/* Key Moments gallery header */}
-              <div className="space-y-4">
-                <h3 className="text-xl font-serif font-bold text-stone-900">Momentos Clave</h3>
-                <p className="text-xs text-stone-500">Pequeños instantes capturados en el tiempo.</p>
+              <div className="space-y-3">
+                <h3 className="text-lg font-serif font-bold text-stone-900">Momentos Clave</h3>
                 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {album.memories.map((m, idx) => (
-                    <div key={idx} className="group bg-white p-2 rounded-xl border border-stone-200 shadow-sm hover:shadow transition">
-                      <img src={m.imageUrl} className="aspect-square object-cover rounded-lg w-full mb-1" alt={m.caption} />
-                      <p className="text-[10px] text-stone-500 text-center truncate italic">"{m.caption}"</p>
+                    <div key={idx} className="group bg-white p-1.5 rounded-lg border border-stone-100 shadow-sm hover:shadow transition">
+                      <img src={m.imageUrl} className="aspect-square object-cover rounded-md w-full mb-1" alt={m.caption} />
+                      <p className="text-[9px] text-stone-500 text-center truncate italic">"{m.caption}"</p>
                     </div>
                   ))}
                 </div>
@@ -309,59 +308,58 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
             </div>
 
             {/* Sidebar (Right) */}
-            <aside className="md:w-1/3 space-y-8">
+            <aside className="md:w-1/3 space-y-6">
               
               {/* Info card */}
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-6">
-                <h3 className="font-serif text-xl font-bold text-stone-950">Sobre este viaje</h3>
+              <div className="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm space-y-4">
+                <h3 className="font-serif text-lg font-bold text-stone-950">Sobre este viaje</h3>
                 
                 {/* Simulated map placeholder */}
-                <div className="aspect-[16/10] bg-stone-100 rounded-2xl border border-stone-200 flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div className="aspect-[16/10] bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-center relative overflow-hidden">
                   <div className="text-center p-4">
-                    <MapPin className="w-8 h-8 text-amber-900 mx-auto mb-2 animate-bounce" />
-                    <p className="text-xs font-bold text-stone-800">{album.location}</p>
+                    <MapPin className="w-6 h-6 text-primary mx-auto mb-1 animate-bounce" />
+                    <p className="text-[10px] font-bold text-stone-700">{album.location}</p>
                   </div>
                 </div>
 
-                <div className="space-y-4 text-sm text-stone-700">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-stone-400" />
+                <div className="space-y-2 text-xs text-stone-600">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-stone-300" />
                     <span>{album.date}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Heart className="w-5 h-5 text-stone-400" />
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-stone-300" />
                     <span>Categorías: <span className="font-semibold text-stone-900">{album.companions.join(', ')}</span></span>
                   </div>
                 </div>
 
-                <div className="flex justify-between mt-6 pt-6 border-t border-stone-100">
+                <div className="flex justify-between mt-4 pt-4 border-t border-stone-50">
                   <div className="text-center w-full">
-                    <p className="text-3xl font-bold font-serif text-amber-950">{album.memories?.length || 0}</p>
-                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">RECUERDOS</p>
+                    <p className="text-2xl font-bold font-serif text-stone-950">{album.memories?.length || 0}</p>
+                    <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">RECUERDOS</p>
                   </div>
                 </div>
               </div>
 
               {/* Viajeros List card */}
-              <div className="bg-white p-6 rounded-3xl border border-stone-200 shadow-sm space-y-4">
-                <h3 className="font-serif text-xl font-bold text-stone-950">Viajeros</h3>
-                <div className="space-y-3">
+              <div className="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm space-y-3">
+                <h3 className="font-serif text-lg font-bold text-stone-950">Viajeros</h3>
+                <div className="space-y-2">
                   {album.members.slice(0, 3).map((m, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <img src={m.avatar} alt={m.name} className="w-8 h-8 rounded-full object-cover" />
+                    <div key={i} className="flex items-center gap-2">
+                      <img src={m.avatar} alt={m.name} className="w-6 h-6 rounded-full object-cover" />
                       <div>
-                        <p className="text-xs font-bold text-stone-800">{m.name}</p>
-                        <p className="text-[10px] text-stone-500">{m.role}</p>
+                        <p className="text-[10px] font-bold text-stone-800">{m.name}</p>
+                        <p className="text-[9px] text-stone-400">{m.role}</p>
                       </div>
                     </div>
                   ))}
                 </div>
                 <button 
                   onClick={() => setActiveTab('Personas')}
-                  className="w-full text-center border border-dashed border-stone-300 hover:border-stone-500 py-2.5 rounded-xl text-xs font-bold text-stone-700 transition"
+                  className="w-full text-center border border-dashed border-stone-200 hover:border-primary py-2 rounded-md text-[10px] font-bold text-stone-600 transition"
                 >
-                  + INVITAR A ALGUIEN
+                  + INVITAR
                 </button>
               </div>
 
