@@ -14,6 +14,22 @@ export const AlbumDetail = () => {
                 ))}
             </div>
         );
+      case 'Conversación':
+        return (
+            <div className="w-2/3 space-y-6">
+                <div className="bg-white p-4 rounded-lg shadow-sm border border-stone-100">
+                    <p className="text-sm text-stone-700">¡Qué día tan increíble hoy en la Cala del Tío Ximo! ¿Alguien guardó el vídeo de los niños saltando desde las rocas?</p>
+                </div>
+                <div className="bg-amber-100 p-4 rounded-lg shadow-sm border border-amber-200">
+                    <p className="text-sm text-stone-700">¡Aquí lo tengo! Los saltos fueron épicos 🤙</p>
+                    <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400" className="mt-2 rounded-lg" alt="Jump" />
+                </div>
+                <div className="flex gap-2">
+                    <input type="text" placeholder="Escribe un mensaje..." className="flex-grow border border-stone-200 rounded-lg px-4 py-2" />
+                    <button className="bg-amber-900 text-white px-4 py-2 rounded-lg">Enviar</button>
+                </div>
+            </div>
+        );
       default:
         return (
             <div className="w-2/3 space-y-12">
@@ -86,7 +102,7 @@ export const AlbumDetail = () => {
             {renderContent()}
 
             {/* Sidebar */}
-            {activeTab !== 'Recuerdos' && (
+            {(activeTab !== 'Recuerdos' && activeTab !== 'Conversación') && (
                 <aside className="w-1/3 space-y-8">
                     <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
                         <h3 className="font-serif text-xl font-bold mb-4">Sobre este viaje</h3>
