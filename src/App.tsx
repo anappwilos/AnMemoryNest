@@ -15,6 +15,8 @@ import { TimelineView } from './components/TimelineView';
 import { DigitalLegacy } from './components/DigitalLegacy';
 import { NewMemoryModal } from './components/NewMemoryModal';
 
+import { BottomNavigation } from './components/BottomNavigation';
+
 // Static / State Data
 import { INITIAL_ALBUMS, INITIAL_SUGGESTIONS } from './data';
 import { Album, AISuggestion } from './types';
@@ -260,11 +262,20 @@ export default function App() {
         />
       )}
 
-      <div className="flex-grow">
+      <div className={`flex-grow ${showShell ? 'pb-16 md:pb-0' : ''}`}>
         {renderView()}
       </div>
 
       {showShell && <Footer />}
+      {showShell && (
+        <BottomNavigation 
+          currentTab={currentTab} 
+          onTabChange={(tab) => {
+            setCurrentTab(tab);
+            setCurrentView('dashboard');
+          }} 
+        />
+      )}
 
       {/* Global New Memory Modal */}
       {newMemoryModalOpen && (

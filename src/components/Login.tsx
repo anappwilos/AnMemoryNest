@@ -17,16 +17,16 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
 
   return (
     <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex w-full max-w-5xl h-[600px]">
+      <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl h-auto md:h-[600px]">
         {/* Form Side */}
-        <div className="w-1/2 p-12 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-12">
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-8 md:mb-12">
                 <Leaf className="w-8 h-8 text-amber-900" />
-                <h1 className="text-2xl font-serif font-bold text-amber-900">MemoryNest</h1>
+                <h1 className="text-xl md:text-2xl font-serif font-bold text-amber-900">MemoryNest</h1>
             </div>
             
-            <h2 className="text-4xl font-serif text-stone-900 mb-2">Bienvenido de nuevo</h2>
-            <p className="text-stone-600 mb-8">Vuelve a tus álbumes y recuerdos compartidos.</p>
+            <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">Bienvenido de nuevo</h2>
+            <p className="text-stone-600 mb-8 text-sm md:text-base">Vuelve a tus álbumes y recuerdos compartidos.</p>
             
             {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
             
@@ -38,7 +38,7 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
                 <div>
                     <div className="flex justify-between items-center mb-2">
                         <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest">Contraseña</label>
-                        <span className="text-xs text-stone-500 cursor-pointer hover:text-amber-900">¿Olvidaste tu contraseña?</span>
+                        <span className="text-[10px] md:text-xs text-stone-500 cursor-pointer hover:text-amber-900">¿Olvidaste tu contraseña?</span>
                     </div>
                     <div className="relative">
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
@@ -58,7 +58,7 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRe
         </div>
         
         {/* Image Side */}
-        <div className="w-1/2 bg-stone-200 relative">
+        <div className="w-full md:w-1/2 bg-stone-200 relative hidden md:block">
             <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800" alt="Family" className="w-full h-full object-cover" />
             <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-lg">
                 <div className="flex items-center gap-4">

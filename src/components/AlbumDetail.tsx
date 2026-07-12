@@ -378,27 +378,27 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-900 flex flex-col">
       {/* Hero Banner */}
-      <div className="relative h-96 bg-stone-900">
+      <div className="relative h-[60vh] min-h-[320px] md:h-96 bg-stone-900">
         <img src={album.coverImage} alt={album.title} className="w-full h-full object-cover opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
         
         {/* Back navigation */}
         <button 
           onClick={onBack} 
-          className="absolute top-6 left-6 bg-white/10 backdrop-blur-md hover:bg-white/20 p-2.5 rounded-full text-white transition flex items-center gap-1.5"
+          className="absolute top-6 left-4 md:left-6 bg-white/10 backdrop-blur-md hover:bg-white/20 p-2.5 rounded-full text-white transition flex items-center gap-1.5"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="text-xs font-bold uppercase pr-2">Volver</span>
+          <span className="hidden sm:inline text-xs font-bold uppercase pr-2">Volver</span>
         </button>
 
         {/* Hero bottom content */}
-        <div className="absolute bottom-0 left-0 right-0 p-8 text-white max-w-7xl mx-auto">
-          <div className="flex flex-wrap gap-4 text-xs font-semibold mb-2 opacity-90">
+        <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-white max-w-7xl mx-auto">
+          <div className="flex flex-wrap gap-2 md:gap-4 text-xs font-semibold mb-2 opacity-90">
             <span className="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full"><Calendar className="w-3.5 h-3.5" /> {album.date}</span>
             <span className="flex items-center gap-1 bg-white/20 px-3 py-1.5 rounded-full"><MapPin className="w-3.5 h-3.5" /> {album.location}</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-serif font-bold mb-2">{album.title}</h1>
-          <p className="text-lg italic mb-6 opacity-95">"{album.description}"</p>
+          <h1 className="text-3xl md:text-5xl font-serif font-bold mb-2">{album.title}</h1>
+          <p className="text-sm md:text-lg italic mb-6 opacity-95 line-clamp-2 md:line-clamp-none">"{album.description}"</p>
           
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex -space-x-3">
@@ -412,7 +412,7 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               )}
             </div>
             
-            <button className="bg-white/15 backdrop-blur-md hover:bg-white/25 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition">
+            <button className="hidden sm:flex bg-white/15 backdrop-blur-md hover:bg-white/25 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider items-center gap-1.5 transition">
               <Share2 className="w-4 h-4" /> Compartir
             </button>
             <button 
@@ -426,13 +426,13 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
       </div>
 
       {/* Album Tabs */}
-      <div className="border-b border-stone-200 bg-white sticky top-[72px] z-20">
-        <div className="max-w-7xl mx-auto px-8 flex gap-8">
+      <div className="border-b border-stone-200 bg-white sticky top-0 md:top-[72px] z-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 flex gap-6 md:gap-8 overflow-x-auto hide-scrollbar">
           {['Historia', 'Recuerdos', 'Personas', 'Conversación'].map((tab) => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab)} 
-              className={`py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition ${
+              className={`py-4 text-xs font-bold uppercase tracking-widest border-b-2 whitespace-nowrap transition ${
                 activeTab === tab ? 'text-amber-900 border-amber-900' : 'text-stone-500 border-transparent hover:text-amber-900'
               }`}
             >
@@ -443,7 +443,7 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
       </div>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-8 py-12 flex-grow w-full">
+      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12 flex-grow w-full">
         {renderContent()}
       </main>
 

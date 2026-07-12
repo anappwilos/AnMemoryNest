@@ -135,7 +135,7 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
               {/* Preset Carousel */}
               <div className="mt-4">
                 <p className="text-xs text-stone-500 mb-2">O selecciona una imagen de demostración:</p>
-                <div className="grid grid-cols-6 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {PRESET_IMAGES.map((img, idx) => (
                     <button 
                       key={idx}
@@ -166,7 +166,7 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
             </div>
 
             {/* Metadata (Date & Location) */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Fecha</label>
                 <div className="relative">
@@ -195,7 +195,7 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
             </div>
 
             {/* Voice Recording Feature Card */}
-            <div className="bg-amber-50/40 border border-amber-900/10 rounded-2xl p-4 flex items-center justify-between">
+            <div className="bg-amber-50/40 border border-amber-900/10 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <h4 className="font-serif font-bold text-stone-900 flex items-center gap-2">
                   <Mic className="w-4 h-4 text-amber-950" />
@@ -208,7 +208,7 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
                   </p>
                 )}
               </div>
-              <div>
+              <div className="w-full md:w-auto flex justify-end">
                 {isRecording ? (
                   <button 
                     type="button" 

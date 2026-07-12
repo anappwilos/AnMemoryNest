@@ -4,9 +4,9 @@ import { Leaf, Eye } from 'lucide-react';
 export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void }) => {
   return (
     <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
-      <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex w-full max-w-5xl h-[700px]">
+      <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl h-auto md:h-[700px]">
         {/* Image Side */}
-        <div className="w-1/2 bg-stone-200 relative">
+        <div className="w-full md:w-1/2 bg-stone-200 relative hidden md:block">
             <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800" alt="Family" className="w-full h-full object-cover" />
             <div className="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-lg">
                 <p className="text-sm text-stone-600 mb-2">12 de mayo de 2024</p>
@@ -17,17 +17,17 @@ export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void 
         </div>
 
         {/* Form Side */}
-        <div className="w-1/2 p-12 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-8">
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-8 md:mb-8">
                 <Leaf className="w-8 h-8 text-amber-900" />
-                <h1 className="text-2xl font-serif font-bold text-amber-900">MemoryNest</h1>
+                <h1 className="text-xl md:text-2xl font-serif font-bold text-amber-900">MemoryNest</h1>
             </div>
             
-            <h2 className="text-4xl font-serif text-stone-900 mb-2">Crea tu cuenta</h2>
-            <p className="text-stone-600 mb-8">Empieza a preservar tus recuerdos más valiosos en un espacio privado y compartido.</p>
+            <h2 className="text-3xl md:text-4xl font-serif text-stone-900 mb-2">Crea tu cuenta</h2>
+            <p className="text-stone-600 mb-8 text-sm md:text-base">Empieza a preservar tus recuerdos más valiosos en un espacio privado y compartido.</p>
             
             <form className="space-y-4">
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                         <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Nombre</label>
                         <input type="text" placeholder="Tu nombre" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />

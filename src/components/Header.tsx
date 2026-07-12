@@ -19,7 +19,7 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
   ];
 
   return (
-    <header className="border-b border-stone-200 bg-white px-8 py-4 flex items-center justify-between sticky top-0 z-30">
+    <header className="border-b border-stone-200 bg-white px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-30">
       
       {/* Brand Logo */}
       <div className="flex items-center gap-8">
@@ -30,7 +30,7 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
           <div className="p-1.5 bg-amber-900 rounded-lg text-white">
             <Leaf className="w-5 h-5" />
           </div>
-          <h1 className="text-2xl font-serif font-bold text-amber-900 tracking-tight">AnMemoryNest</h1>
+          <h1 className="text-xl md:text-2xl font-serif font-bold text-amber-900 tracking-tight hidden sm:block">AnMemoryNest</h1>
         </div>
 
         {/* Navigation tabs */}
