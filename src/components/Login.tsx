@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Leaf, Eye } from 'lucide-react';
 
-export const Login = ({ onNavigateToRegister }: { onNavigateToRegister: () => void }) => {
+export const Login = ({ onNavigateToRegister, onLoginSuccess }: { onNavigateToRegister: () => void, onLoginSuccess: () => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email === 'root@root.com' && password === 'root') {
+      onLoginSuccess();
+    } else {
+      setError('Credenciales inválidas');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-stone-50 flex items-center justify-center p-4">
       <div className="bg-white shadow-xl rounded-3xl overflow-hidden flex w-full max-w-5xl h-[600px]">
@@ -15,10 +28,12 @@ export const Login = ({ onNavigateToRegister }: { onNavigateToRegister: () => vo
             <h2 className="text-4xl font-serif text-stone-900 mb-2">Bienvenido de nuevo</h2>
             <p className="text-stone-600 mb-8">Vuelve a tus álbumes y recuerdos compartidos.</p>
             
-            <form className="space-y-6">
+            {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+            
+            <form className="space-y-6" onSubmit={handleLogin}>
                 <div>
                     <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Correo electrónico</label>
-                    <input type="email" placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ejemplo@correo.com" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                 </div>
                 <div>
                     <div className="flex justify-between items-center mb-2">
@@ -26,7 +41,7 @@ export const Login = ({ onNavigateToRegister }: { onNavigateToRegister: () => vo
                         <span className="text-xs text-stone-500 cursor-pointer hover:text-amber-900">¿Olvidaste tu contraseña?</span>
                     </div>
                     <div className="relative">
-                        <input type="password" placeholder="Tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" />
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Tu contraseña" className="w-full bg-stone-100 border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-amber-900" required />
                         <Eye className="absolute right-3 top-3.5 w-5 h-5 text-stone-400" />
                     </div>
                 </div>

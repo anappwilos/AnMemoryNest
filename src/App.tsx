@@ -14,7 +14,7 @@ export default function App() {
       case 'landing':
         return <LandingPage onStart={() => setCurrentView('login')} />;
       case 'login':
-        return <Login onNavigateToRegister={() => setCurrentView('register')} />;
+        return <Login onNavigateToRegister={() => setCurrentView('register')} onLoginSuccess={() => setCurrentView('create-album')} />;
       case 'register':
         return <Register onNavigateToLogin={() => setCurrentView('login')} />;
       case 'create-album':
