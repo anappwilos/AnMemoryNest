@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, Bell, Camera, User, LogOut, Sparkles } from 'lucide-react';
+import { Leaf, Bell, Camera, User, LogOut, Sparkles, Settings } from 'lucide-react';
 
 interface HeaderProps {
   currentTab: string;
@@ -37,9 +37,6 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
         <nav className="hidden md:flex gap-6">
           {[
             { id: 'Home', label: 'Inicio' },
-            { id: 'Timeline', label: 'Bitácora' },
-            { id: 'People', label: 'Personas' },
-            { id: 'AI-Assistant', label: 'Asistente IA' },
             { id: 'Legacy', label: 'Legado Digital' }
           ].map((tab) => (
             <button 
@@ -122,6 +119,14 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
               >
                 <User className="w-4 h-4 text-stone-400" />
                 Mi Perfil y Legado
+              </button>
+
+              <button 
+                onClick={() => { onTabChange('Settings'); setProfileOpen(false); }}
+                className="w-full text-left px-3 py-2 hover:bg-stone-50 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition"
+              >
+                <Settings className="w-4 h-4 text-stone-400" />
+                Ajustes
               </button>
               
               <button 

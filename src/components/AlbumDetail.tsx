@@ -1,19 +1,66 @@
 import React, { useState } from 'react';
 import { Camera, Share2, MapPin, Calendar, Heart, Users, ArrowLeft, Send, Mic, FileText, Check } from 'lucide-react';
-import { Album } from '../types';
+import { Album, AISuggestion } from '../types';
+import { MemoryAssistant } from './MemoryAssistant';
 
 interface AlbumDetailProps {
   album: Album;
+  albums: Album[];
+  suggestions: AISuggestion[];
+  onAcceptSuggestion: (id: string, customData?: any) => void;
+  onIgnoreSuggestion: (id: string) => void;
   onBack: () => void;
   onAddMemoryClick: () => void;
   onUpdateAlbum: (updated: Album) => void;
 }
 
-export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: AlbumDetailProps) => {
-  const [activeTab, setActiveTab] = useState('Historia');
+export const AlbumDetail = ({ 
+  album, 
+  albums,
+  suggestions,
+  onAcceptSuggestion,
+  onIgnoreSuggestion,
+  onBack, 
+  onAddMemoryClick, 
+  onUpdateAlbum 
+}: AlbumDetailProps) => {
+  const [activeTab, setActiveTab] = useState('Bitácora');
   const [chatMessage, setChatMessage] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState(false);
+  const [inviteName, setInviteName] = useState('');
+  const [inviteRole, setInviteRole] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteName.trim() || !inviteRole.trim() || !inviteEmail.trim()) return;
+
+    // Use a high-quality aesthetic avatar placeholder based on relation/gender
+    const isMale = ['padre', 'tío', 'hermano', 'primo', 'abuelo'].some(r => inviteRole.toLowerCase().includes(r));
+    const avatarUrl = isMale 
+      ? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100'
+      : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100';
+
+    const newMember = {
+      name: inviteName,
+      role: inviteRole,
+      avatar: avatarUrl,
+      online: false
+    };
+
+    const updatedAlbum = {
+      ...album,
+      members: [...album.members, newMember]
+    };
+    onUpdateAlbum(updatedAlbum);
+
+    setInviteName('');
+    setInviteRole('');
+    setInviteEmail('');
+    setInviteSuccess(true);
+    setTimeout(() => setInviteSuccess(false), 3000);
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +139,7 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
             <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm space-y-6">
               <div>
                 <h3 className="font-serif text-2xl text-stone-950 font-bold">Álbum Colaborativo</h3>
-                <p className="text-sm text-stone-500">Familiares y amigos autorizados para ver y aportar.</p>
+                <p className="text-sm text-stone-500">Familiares y amigos autorizados para ver y aportar a este álbum específico.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,26 +165,53 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
               </div>
 
               {/* Invitation option inside Personas tab */}
-              <div className="pt-4 border-t border-stone-100">
-                <h4 className="font-bold text-stone-800 text-xs mb-2">¿Invitar a alguien más?</h4>
-                <div className="flex gap-2">
-                  <input 
-                    type="email" 
-                    placeholder="correo@familiar.com" 
-                    className="flex-grow bg-stone-50 border border-stone-100 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none" 
-                  />
-                  <button 
-                    onClick={() => {
-                      setInviteSuccess(true);
-                      setTimeout(() => setInviteSuccess(false), 3000);
-                    }}
-                    className="bg-primary text-white text-xs font-bold px-4 py-2 rounded-md"
-                  >
-                    Invitar
-                  </button>
-                </div>
+              <div className="pt-6 border-t border-stone-100">
+                <h4 className="font-bold text-stone-800 text-sm mb-3">Agregar / Invitar Persona al Álbum</h4>
+                <form onSubmit={handleInvite} className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+                  <div>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Nombre</label>
+                    <input 
+                      type="text" 
+                      value={inviteName}
+                      onChange={(e) => setInviteName(e.target.value)}
+                      placeholder="Ej. Tía Elena" 
+                      required
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Parentesco / Rol</label>
+                    <input 
+                      type="text" 
+                      value={inviteRole}
+                      onChange={(e) => setInviteRole(e.target.value)}
+                      placeholder="Ej. Tía / Fotógrafa" 
+                      required
+                      className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none" 
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-grow">
+                      <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Correo Electrónico</label>
+                      <input 
+                        type="email" 
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        placeholder="correo@familiar.com" 
+                        required
+                        className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none" 
+                      />
+                    </div>
+                    <button 
+                      type="submit"
+                      className="bg-amber-900 hover:bg-amber-800 text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0 h-9 transition-colors"
+                    >
+                      Invitar
+                    </button>
+                  </div>
+                </form>
                 {inviteSuccess && (
-                  <p className="text-[10px] text-emerald-800 font-bold mt-2">✓ ¡Invitación enviada!</p>
+                  <p className="text-[10px] text-emerald-800 font-bold mt-2">✓ ¡Invitación enviada y persona agregada con éxito!</p>
                 )}
               </div>
             </div>
@@ -261,30 +335,54 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
           </div>
         );
 
-      default: // Historia
+      case 'Asistente IA':
+        return (
+          <MemoryAssistant 
+            suggestions={suggestions} 
+            albums={albums} 
+            onAccept={onAcceptSuggestion}
+            onIgnore={onIgnoreSuggestion}
+          />
+        );
+
+      default: // Bitácora
         return (
           <div className="w-full flex flex-col md:flex-row gap-12">
             
             {/* Chapters and quote (Left) */}
             <div className="md:w-2/3 space-y-12">
-              {album.chapters.map((ch) => (
-                <section key={ch.id} className="space-y-3">
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">{ch.chapterNum}</p>
-                  <h2 className="text-2xl font-serif font-bold text-stone-950">{ch.title}</h2>
-                  
-                  <div className={`flex flex-col md:flex-row gap-6 ${ch.imageSide === 'left' ? 'md:flex-row-reverse' : ''}`}>
-                    <p className="text-stone-700 leading-relaxed text-sm flex-grow">
-                      {ch.text}
-                    </p>
-                    <div className="md:w-1/3 aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-stone-100">
-                      <img src={ch.image} className="w-full h-full object-cover" alt={ch.title} />
+              <div className="mb-6">
+                <h3 className="font-serif text-2xl font-bold text-amber-950">Bitácora del Álbum</h3>
+                <p className="text-xs text-stone-500 mt-1">Línea de tiempo cronológica con relatos de este baúl de recuerdos.</p>
+              </div>
+
+              <div className="relative border-l border-amber-900/15 ml-4 md:ml-6 pl-6 md:pl-10 space-y-12 py-4">
+                {album.chapters.map((ch) => (
+                  <div key={ch.id} className="relative group space-y-3">
+                    {/* Dot Marker */}
+                    <div className="absolute -left-[31px] md:-left-[47px] top-1.5 w-4 h-4 rounded-full border-2 border-amber-900 bg-white group-hover:bg-amber-900 transition-all duration-300 shadow-sm"></div>
+                    
+                    <div>
+                      <p className="text-[10px] font-bold text-amber-900 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded-full inline-block">
+                        {ch.chapterNum}
+                      </p>
+                      <h2 className="text-xl md:text-2xl font-serif font-bold text-stone-950 mt-2">{ch.title}</h2>
+                    </div>
+                    
+                    <div className={`flex flex-col md:flex-row gap-6 ${ch.imageSide === 'left' ? 'md:flex-row-reverse' : ''}`}>
+                      <p className="text-stone-700 leading-relaxed text-sm flex-grow">
+                        {ch.text}
+                      </p>
+                      <div className="md:w-1/3 aspect-[3/4] rounded-xl overflow-hidden shadow-sm border border-stone-100 shrink-0">
+                        <img src={ch.image} className="w-full h-full object-cover group-hover:scale-102 transition duration-300" alt={ch.title} />
+                      </div>
                     </div>
                   </div>
-                </section>
-              ))}
+                ))}
+              </div>
 
               {album.quote && (
-                <blockquote className="text-xl font-serif text-primary italic text-center py-10 border-y border-stone-100">
+                <blockquote className="text-xl font-serif text-amber-900 italic text-center py-10 border-y border-stone-100">
                   "{album.quote}"
                   {album.quoteAuthor && (
                     <footer className="text-[10px] not-italic mt-3 text-stone-400 uppercase tracking-widest">— {album.quoteAuthor}</footer>
@@ -422,7 +520,7 @@ export const AlbumDetail = ({ album, onBack, onAddMemoryClick, onUpdateAlbum }: 
       {/* Album Tabs */}
       <div className="border-b border-stone-200 bg-white sticky top-0 md:top-[72px] z-20">
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex gap-6 md:gap-8 overflow-x-auto hide-scrollbar">
-          {['Historia', 'Recuerdos', 'Personas', 'Conversación'].map((tab) => (
+          {['Bitácora', 'Recuerdos', 'Personas', 'Conversación', 'Asistente IA'].map((tab) => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab)} 

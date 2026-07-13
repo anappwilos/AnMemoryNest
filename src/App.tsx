@@ -10,11 +10,10 @@ import { Footer } from './components/Footer';
 
 // Subcomponents
 import { MemoryAssistant } from './components/MemoryAssistant';
-import { PeopleManager } from './components/PeopleManager';
-import { TimelineView } from './components/TimelineView';
 import { DigitalLegacy } from './components/DigitalLegacy';
 import { NewMemoryModal } from './components/NewMemoryModal';
 import { BottomNavigation } from './components/BottomNavigation';
+import { Settings } from './components/Settings';
 
 // Static / State Data
 import { Album, AISuggestion } from './types';
@@ -46,7 +45,18 @@ export default function App() {
 
   const [localAlbums, setLocalAlbums] = useState<Album[]>(() => {
     const saved = localStorage.getItem('memorynest_demo_albums');
-    return saved ? JSON.parse(saved) : [];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const needsRegeneration = parsed.some((a: Album) => !a.memories || a.memories.length < 5);
+        if (!needsRegeneration) {
+          return parsed;
+        }
+      } catch (e) {
+        // ignore parsing error
+      }
+    }
+    return [];
   });
 
   const albums = isDemoSession ? localAlbums : (albumsQuery.data || []);
@@ -95,19 +105,81 @@ export default function App() {
     }
   }, [user, authLoading, albums, albumsQuery.isLoading, demoAlbumsCreated, isDemoSession, localAlbums.length]);
 
+  useEffect(() => {
+    if (albums.length > 0 && aiSuggestions.length === 0) {
+      const travelAlbum = albums.find(a => a.category === 'travel' || a.title.toLowerCase().includes('viaje') || a.title.toLowerCase().includes('interrail'));
+      const familyAlbum = albums.find(a => a.category === 'family' || a.title.toLowerCase().includes('familia'));
+      
+      const initialSuggestions: AISuggestion[] = [
+        {
+          id: 'sug_1',
+          type: 'face',
+          title: '¿Identificar rostro?',
+          description: 'Hemos detectado a una persona frecuente en varias fotos de este álbum. ¿Es tu hermano Carlos?',
+          targetAlbum: travelAlbum?.id || albums[0].id,
+          targetImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300',
+        },
+        {
+          id: 'sug_2',
+          type: 'date',
+          title: 'Completar fecha sugerida',
+          description: 'La foto de la cena familiar parece haber sido tomada durante el año nuevo de 2026. ¿Quieres asignarle la fecha correcta?',
+          targetAlbum: familyAlbum?.id || albums[0].id,
+          targetImage: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=300',
+        },
+        {
+          id: 'sug_3',
+          type: 'duplicate',
+          title: 'Limpieza de fotos duplicadas',
+          description: 'Se encontraron dos imágenes casi idénticas de "La puesta de sol". Te sugerimos conservar la de mayor resolución.',
+          targetAlbum: travelAlbum?.id || albums[0].id,
+          targetImage: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=300',
+        }
+      ];
+      setAiSuggestions(initialSuggestions);
+    }
+  }, [albums, aiSuggestions.length]);
+
   const createDefaultAlbums = async (user: any) => {
     const demos = [
       {
         title: 'Viaje Interrail 2026',
         category: 'travel',
         date: '2026-06-01',
-        location: 'Europa'
+        location: 'Europa',
+        memories: [
+          { id: 'm_tr_1', imageUrl: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800', caption: 'Puesta de sol espectacular desde las costas del sur de Europa.', date: '2026-06-02' },
+          { id: 'm_tr_2', imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800', caption: 'Nuestra aventura por carreteras infinitas y parajes espectaculares.', date: '2026-06-05' },
+          { id: 'm_tr_3', imageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800', caption: 'Planeando la siguiente parada en la estación del tren.', date: '2026-06-10' },
+          { id: 'm_tr_4', imageUrl: 'https://images.unsplash.com/photo-1500835595337-f74001712681?auto=format&fit=crop&q=80&w=800', caption: 'El amanecer desde las nubes en nuestro primer vuelo juntos.', date: '2026-06-12' },
+          { id: 'm_tr_5', imageUrl: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=800', caption: 'Las risas infinitas y brindis que marcaron este verano europeo.', date: '2026-06-15' }
+        ],
+        members: [
+          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
+          { name: 'Carlos Ruiz', role: 'Aventurero / Hermano', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100', online: true },
+          { name: 'Santi Martínez', role: 'Fotógrafo oficial', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=100', online: false },
+          { name: 'Laura Gómez', role: 'Organizadora de rutas', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100', online: true }
+        ]
       },
       {
         title: `Familia ${user.displayName || ''}`,
         category: 'family',
         date: '2026-01-01',
-        location: 'Casa'
+        location: 'Casa',
+        memories: [
+          { id: 'm_fa_1', imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800', caption: 'Cena de Año Nuevo reuniendo a tres generaciones de la familia.', date: '2026-01-01' },
+          { id: 'm_fa_2', imageUrl: 'https://images.unsplash.com/photo-1595981234969-8259b94fde88?auto=format&fit=crop&q=80&w=800', caption: 'Un almuerzo dominical de risas y anécdotas compartidas en casa.', date: '2026-01-05' },
+          { id: 'm_fa_3', imageUrl: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800', caption: 'Momentos dulces y abrazos llenos de amor incondicional.', date: '2026-01-10' },
+          { id: 'm_fa_4', imageUrl: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800', caption: 'Abuelo enseñando con paciencia los juegos clásicos de su infancia.', date: '2026-01-15' },
+          { id: 'm_fa_5', imageUrl: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800', caption: 'Celebrando con globos, pasteles y alegría el cumpleaños familiar.', date: '2026-01-20' }
+        ],
+        members: [
+          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
+          { name: 'Abuela Carmen', role: 'Matriarca', avatar: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=100', online: true },
+          { name: 'Mamá (María)', role: 'Co-organizadora', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
+          { name: 'Abuelo Manuel', role: 'Legado Familiar', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100', online: false },
+          { name: 'Papá (Roberto)', role: 'Asador principal', avatar: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?auto=format&fit=crop&q=80&w=100', online: true }
+        ]
       }
     ];
 
@@ -125,12 +197,10 @@ export default function App() {
         location: demo.location,
         coverImage: defaultCover,
         description: `Álbum de ${demo.category} creado automáticamente`,
-        imagesCount: 0,
+        imagesCount: demo.memories.length,
         videosCount: 0,
         companions: [demo.category === 'travel' ? 'Amigos' : 'Familia'],
-        members: [
-          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true }
-        ],
+        members: demo.members,
         chapters: [
           {
             id: `ch_${Date.now()}_${demo.title}`,
@@ -141,7 +211,7 @@ export default function App() {
             imageSide: 'right'
           }
         ],
-        memories: [],
+        memories: demo.memories,
         conversation: []
       };
 
@@ -332,6 +402,10 @@ export default function App() {
         return activeAlbum ? (
           <AlbumDetail 
             album={activeAlbum} 
+            albums={albums}
+            suggestions={aiSuggestions.filter(s => s.targetAlbum === activeAlbum.id)}
+            onAcceptSuggestion={handleAcceptSuggestion}
+            onIgnoreSuggestion={handleIgnoreSuggestion}
             onBack={() => {
               setCurrentView('dashboard');
               setCurrentTab('Home');
@@ -345,29 +419,25 @@ export default function App() {
       case 'dashboard':
         // Handle tab subviews
         switch (currentTab) {
-          case 'Timeline':
-            return (
-              <TimelineView 
-                albums={albums} 
-                onAlbumClick={(id) => {
-                  setActiveAlbumId(id);
-                  setCurrentView('album-detail');
-                }} 
-              />
-            );
-          case 'People':
-            return <PeopleManager />;
-          case 'AI-Assistant':
-            return (
-              <MemoryAssistant 
-                suggestions={aiSuggestions} 
-                albums={albums} 
-                onAccept={handleAcceptSuggestion}
-                onIgnore={handleIgnoreSuggestion}
-              />
-            );
           case 'Legacy':
             return <DigitalLegacy />;
+          case 'Settings':
+            return (
+              <Settings 
+                user={user}
+                albums={albums}
+                suggestions={aiSuggestions}
+                onAcceptSuggestion={handleAcceptSuggestion}
+                onIgnoreSuggestion={handleIgnoreSuggestion}
+                onUpdateUser={(updated) => {
+                  if (mockUser) {
+                    const newUser = { ...mockUser, ...updated };
+                    setMockUser(newUser);
+                    localStorage.setItem('memorynest_mock_user', JSON.stringify(newUser));
+                  }
+                }}
+              />
+            );
           case 'Home':
           default:
             return (

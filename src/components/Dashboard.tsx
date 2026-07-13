@@ -37,12 +37,6 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
             >
               <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
             </button>
-            <button 
-              onClick={() => onNavigateToTab('Timeline')} 
-              className="bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition"
-            >
-              <BookOpen className="w-3.5 h-3.5" /> Ver Bitácora
-            </button>
           </div>
         </div>
 
