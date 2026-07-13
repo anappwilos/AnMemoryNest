@@ -334,8 +334,54 @@ export default function App() {
   };
 
   // Handle accepting AI suggestions
-  const handleAcceptSuggestion = (suggestionId: string, customData?: any) => {
-    // Left empty for now as requested by the AI feature flags logic
+  const handleAcceptSuggestion = async (suggestionId: string, customData?: any) => {
+    const suggestion = aiSuggestions.find(s => s.id === suggestionId);
+    if (!suggestion) return;
+
+    const album = albums.find(a => a.id === suggestion.targetAlbum);
+    if (!album) return;
+
+    let updatedAlbum = { ...album };
+
+    if (suggestion.type === 'face') {
+      const name = customData?.name || 'Familiar Identificado';
+      // Add member if not already exists
+      if (!updatedAlbum.members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
+        updatedAlbum.members = [
+          ...updatedAlbum.members,
+          {
+            name,
+            role: 'Familiar',
+            avatar: suggestion.targetImage || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100',
+            online: false
+          }
+        ];
+      }
+    } else if (suggestion.type === 'date') {
+      // Find the family dinner or target photo in memories and update date
+      updatedAlbum.memories = updatedAlbum.memories.map(m => {
+        if (m.imageUrl === suggestion.targetImage) {
+          return { ...m, date: '2026-01-01' };
+        }
+        return m;
+      });
+    } else if (suggestion.type === 'duplicate') {
+      // Remove duplicate memory from album
+      updatedAlbum.memories = updatedAlbum.memories.filter(m => m.imageUrl !== suggestion.targetImage);
+      updatedAlbum.imagesCount = Math.max(0, updatedAlbum.imagesCount - 1);
+    }
+
+    // Save album changes
+    if (isDemoSession) {
+      const updated = localAlbums.map(a => a.id === album.id ? updatedAlbum : a);
+      setLocalAlbums(updated);
+      localStorage.setItem('memorynest_demo_albums', JSON.stringify(updated));
+    } else {
+      await updateAlbumMutation.mutateAsync({ albumId: album.id, data: updatedAlbum });
+    }
+
+    // Remove suggestion
+    setAiSuggestions(prev => prev.filter(s => s.id !== suggestionId));
   };
 
   const handleIgnoreSuggestion = (suggestionId: string) => {
@@ -419,6 +465,15 @@ export default function App() {
       case 'dashboard':
         // Handle tab subviews
         switch (currentTab) {
+          case 'Assistant':
+            return (
+              <MemoryAssistant
+                suggestions={aiSuggestions}
+                albums={albums}
+                onAccept={handleAcceptSuggestion}
+                onIgnore={handleIgnoreSuggestion}
+              />
+            );
           case 'Legacy':
             return <DigitalLegacy />;
           case 'Settings':

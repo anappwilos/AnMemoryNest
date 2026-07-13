@@ -9,6 +9,7 @@ interface BottomNavigationProps {
 export const BottomNavigation = ({ currentTab, onTabChange }: BottomNavigationProps) => {
   const tabs = [
     { id: 'Home', label: 'Inicio', icon: Home },
+    { id: 'Assistant', label: 'Asistente IA', icon: Sparkles },
     { id: 'Legacy', label: 'Legado', icon: Shield }
   ];
 

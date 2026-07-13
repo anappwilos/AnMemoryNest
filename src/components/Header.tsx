@@ -37,6 +37,7 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
         <nav className="hidden md:flex gap-6">
           {[
             { id: 'Home', label: 'Inicio' },
+            { id: 'Assistant', label: 'Asistente IA' },
             { id: 'Legacy', label: 'Legado Digital' }
           ].map((tab) => (
             <button 
