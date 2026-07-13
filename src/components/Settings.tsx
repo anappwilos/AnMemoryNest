@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { User, Shield, Sparkles, Sliders, RefreshCw, Check, AlertCircle, Save, Image, Copy, ExternalLink } from 'lucide-react';
+import { User, Shield, Sparkles, Sliders, RefreshCw, Check, AlertCircle, Save, Image, Copy, ExternalLink, Code } from 'lucide-react';
 import { Album, AISuggestion } from '../types';
 import { MemoryAssistant } from './MemoryAssistant';
+import { IMAGE_CATALOGUE } from '../lib/images';
 
 interface SettingsProps {
   user: any;
@@ -25,6 +26,7 @@ export const Settings = ({
   const [avatarUrl, setAvatarUrl] = useState(user?.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100');
   const [isSaved, setIsSaved] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const [imageSubTab, setImageSubTab] = useState<'active' | 'catalogue'>('catalogue');
   
   // AI specific states
   const [aiEnabled, setAiEnabled] = useState(true);
@@ -272,127 +274,232 @@ export const Settings = ({
           {activeSection === 'images' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-lg font-serif font-bold text-stone-900 mb-2">Listado de Imágenes del Proyecto</h2>
-                <p className="text-xs text-stone-500 mb-6">Aquí tienes un listado completo con todas las URLs de las imágenes y portadas cargadas en los álbumes de MemoryNest.</p>
+                <h2 className="text-xl font-serif font-bold text-stone-900 mb-2">Galería de Enlaces del Proyecto</h2>
+                <p className="text-xs text-stone-500 mb-6">
+                  Consulta, copia y gestiona todos los enlaces de imágenes de MemoryNest. Puedes ver las fotos dinámicas de tus álbumes o el catálogo estático definido a nivel de código.
+                </p>
+
+                {/* Sub-Tabs Toggle */}
+                <div className="flex border-b border-stone-200 mb-6 gap-6">
+                  <button
+                    onClick={() => setImageSubTab('catalogue')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition relative ${
+                      imageSubTab === 'catalogue' ? 'text-amber-900 font-bold' : 'text-stone-400 hover:text-stone-700'
+                    }`}
+                  >
+                    {imageSubTab === 'catalogue' && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-900 rounded-full" />
+                    )}
+                    <span className="flex items-center gap-1.5">
+                      <Code className="w-3.5 h-3.5" />
+                      Catálogo en Código (Estáticos)
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => setImageSubTab('active')}
+                    className={`pb-3 text-xs font-bold uppercase tracking-wider transition relative ${
+                      imageSubTab === 'active' ? 'text-amber-900 font-bold' : 'text-stone-400 hover:text-stone-700'
+                    }`}
+                  >
+                    {imageSubTab === 'active' && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-900 rounded-full" />
+                    )}
+                    <span className="flex items-center gap-1.5">
+                      <Image className="w-3.5 h-3.5" />
+                      Imágenes Activas (Álbumes)
+                    </span>
+                  </button>
+                </div>
                 
-                {(() => {
-                  const projectImages = (() => {
-                    const imagesList: { url: string; source: string; albumTitle: string; type: string }[] = [];
-                    const seenUrls = new Set<string>();
+                {imageSubTab === 'catalogue' ? (
+                  <div className="space-y-4">
+                    <div className="bg-amber-900/5 border border-amber-900/10 rounded-2xl p-4 mb-2">
+                      <p className="text-xs text-amber-950 font-medium leading-relaxed">
+                        Este listado proviene directamente de la constante estática <code className="bg-amber-900/10 px-1 py-0.5 rounded font-mono text-[11px]">IMAGE_CATALOGUE</code> definida en el archivo <code className="bg-amber-900/10 px-1 py-0.5 rounded font-mono text-[11px]">/src/lib/images.ts</code>. Es ideal para referenciar avatares, fotos por defecto y portadas de muestra directamente en el código de tu aplicación.
+                      </p>
+                    </div>
 
-                    albums.forEach(album => {
-                      if (album.coverImage && !seenUrls.has(album.coverImage)) {
-                        seenUrls.add(album.coverImage);
-                        imagesList.push({
-                          url: album.coverImage,
-                          source: 'Portada de Álbum',
-                          albumTitle: album.title,
-                          type: 'cover'
-                        });
-                      }
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {IMAGE_CATALOGUE.map((img, idx) => {
+                        const handleCopyUrl = (url: string) => {
+                          navigator.clipboard.writeText(url);
+                          setCopiedUrl(url);
+                          setTimeout(() => setCopiedUrl(null), 2000);
+                        };
 
-                      if (album.chapters) {
-                        album.chapters.forEach(ch => {
-                          if (ch.image && !seenUrls.has(ch.image)) {
-                            seenUrls.add(ch.image);
-                            imagesList.push({
-                              url: ch.image,
-                              source: `Capítulo: ${ch.title}`,
-                              albumTitle: album.title,
-                              type: 'chapter'
-                            });
-                          }
-                        });
-                      }
+                        return (
+                          <div key={idx} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-sm hover:border-stone-300 transition-all">
+                            {/* Thumbnail */}
+                            <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-stone-50">
+                              <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                              <span className="absolute bottom-1 right-1 bg-black/75 text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">
+                                {img.category}
+                              </span>
+                            </div>
 
-                      if (album.memories) {
-                        album.memories.forEach(mem => {
-                          if (mem.imageUrl && !seenUrls.has(mem.imageUrl)) {
-                            seenUrls.add(mem.imageUrl);
-                            imagesList.push({
-                              url: mem.imageUrl,
-                              source: `Recuerdo: ${mem.caption || 'Sin descripción'}`,
-                              albumTitle: album.title,
-                              type: 'memory'
-                            });
-                          }
-                        });
-                      }
-                    });
+                            {/* Details & Actions */}
+                            <div className="flex-grow flex flex-col justify-between min-w-0">
+                              <div className="space-y-1">
+                                <h4 className="font-bold text-stone-900 text-xs truncate" title={img.name}>
+                                  {img.name}
+                                </h4>
+                                <p className="text-[10px] text-stone-500 line-clamp-1" title={img.description}>
+                                  {img.description}
+                                </p>
+                              </div>
 
-                    return imagesList;
-                  })();
+                              {/* URL and Copy */}
+                              <div className="flex gap-1.5 mt-2">
+                                <input
+                                  type="text"
+                                  readOnly
+                                  value={img.url}
+                                  className="flex-grow bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-[9px] font-mono text-stone-500 focus:outline-none focus:ring-1 focus:ring-amber-900 select-all"
+                                />
+                                <button
+                                  onClick={() => handleCopyUrl(img.url)}
+                                  className="bg-amber-900 hover:bg-amber-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shrink-0"
+                                >
+                                  {copiedUrl === img.url ? (
+                                    <>
+                                      <Check className="w-3 h-3" />
+                                      Copiado
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3 h-3" />
+                                      Copiar
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  (() => {
+                    const projectImages = (() => {
+                      const imagesList: { url: string; source: string; albumTitle: string; type: string }[] = [];
+                      const seenUrls = new Set<string>();
 
-                  if (projectImages.length === 0) {
+                      albums.forEach(album => {
+                        if (album.coverImage && !seenUrls.has(album.coverImage)) {
+                          seenUrls.add(album.coverImage);
+                          imagesList.push({
+                            url: album.coverImage,
+                            source: 'Portada de Álbum',
+                            albumTitle: album.title,
+                            type: 'cover'
+                          });
+                        }
+
+                        if (album.chapters) {
+                          album.chapters.forEach(ch => {
+                            if (ch.image && !seenUrls.has(ch.image)) {
+                              seenUrls.add(ch.image);
+                              imagesList.push({
+                                url: ch.image,
+                                source: `Capítulo: ${ch.title}`,
+                                albumTitle: album.title,
+                                type: 'chapter'
+                              });
+                            }
+                          });
+                        }
+
+                        if (album.memories) {
+                          album.memories.forEach(mem => {
+                            if (mem.imageUrl && !seenUrls.has(mem.imageUrl)) {
+                              seenUrls.add(mem.imageUrl);
+                              imagesList.push({
+                                url: mem.imageUrl,
+                                source: `Recuerdo: ${mem.caption || 'Sin descripción'}`,
+                                albumTitle: album.title,
+                                type: 'memory'
+                              });
+                            }
+                          });
+                        }
+                      });
+
+                      return imagesList;
+                    })();
+
+                    if (projectImages.length === 0) {
+                      return (
+                        <div className="text-center py-16 border border-dashed border-stone-200 rounded-3xl bg-stone-50">
+                          <Image className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+                          <h3 className="text-stone-800 font-bold font-serif text-sm">Sin imágenes guardadas</h3>
+                          <p className="text-stone-400 text-xs mt-1">Agrega recuerdos o define fotos de portada para ver sus enlaces aquí.</p>
+                        </div>
+                      );
+                    }
+
+                    const handleCopyUrl = (url: string) => {
+                      navigator.clipboard.writeText(url);
+                      setCopiedUrl(url);
+                      setTimeout(() => setCopiedUrl(null), 2000);
+                    };
+
                     return (
-                      <div className="text-center py-16 border border-dashed border-stone-200 rounded-3xl">
-                        <Image className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-                        <h3 className="text-stone-800 font-bold font-serif text-sm">Sin imágenes guardadas</h3>
-                        <p className="text-stone-400 text-xs mt-1">Agrega recuerdos o define fotos de portada para ver sus enlaces aquí.</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {projectImages.map((img, idx) => (
+                          <div key={idx} className="bg-white border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-sm hover:border-stone-300 transition-all">
+                            {/* Thumbnail */}
+                            <div className="relative w-20 h-20 rounded-xl overflow-hidden border border-stone-200 shrink-0 bg-stone-50">
+                              <img src={img.url} alt={img.source} className="w-full h-full object-cover" />
+                              <span className="absolute bottom-1 right-1 bg-black/75 text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">
+                                {img.type === 'cover' ? 'Portada' : img.type === 'chapter' ? 'Capítulo' : 'Foto'}
+                              </span>
+                            </div>
+
+                            {/* Details & Actions */}
+                            <div className="flex-grow flex flex-col justify-between min-w-0">
+                              <div className="space-y-1">
+                                <h4 className="font-bold text-stone-900 text-xs truncate" title={img.source}>
+                                  {img.source}
+                                </h4>
+                                <p className="text-[10px] text-stone-500 truncate">
+                                  Álbum: <span className="font-medium text-stone-700">{img.albumTitle}</span>
+                                </p>
+                              </div>
+
+                              {/* URL and Copy */}
+                              <div className="flex gap-1.5 mt-2">
+                                <input
+                                  type="text"
+                                  readOnly
+                                  value={img.url}
+                                  className="flex-grow bg-stone-50 border border-stone-200 rounded-lg px-2 py-1 text-[9px] font-mono text-stone-500 focus:outline-none focus:ring-1 focus:ring-amber-900 select-all"
+                                />
+                                <button
+                                  onClick={() => handleCopyUrl(img.url)}
+                                  className="bg-amber-900 hover:bg-amber-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shrink-0"
+                                >
+                                  {copiedUrl === img.url ? (
+                                    <>
+                                      <Check className="w-3 h-3" />
+                                      Copiado
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3 h-3" />
+                                      Copiar
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     );
-                  }
-
-                  const handleCopyUrl = (url: string) => {
-                    navigator.clipboard.writeText(url);
-                    setCopiedUrl(url);
-                    setTimeout(() => setCopiedUrl(null), 2000);
-                  };
-
-                  return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {projectImages.map((img, idx) => (
-                        <div key={idx} className="bg-stone-50 border border-stone-200 rounded-2xl p-4 flex gap-4 hover:shadow-sm hover:border-stone-300 transition-all">
-                          {/* Thumbnail */}
-                          <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-stone-200 shrink-0 bg-stone-100">
-                            <img src={img.url} alt={img.source} className="w-full h-full object-cover" />
-                            <span className="absolute bottom-1 right-1 bg-black/75 text-white text-[8px] font-bold px-1.5 py-0.5 rounded uppercase">
-                              {img.type === 'cover' ? 'Portada' : img.type === 'chapter' ? 'Capítulo' : 'Foto'}
-                            </span>
-                          </div>
-
-                          {/* Details & Actions */}
-                          <div className="flex-grow flex flex-col justify-between min-w-0">
-                            <div className="space-y-1">
-                              <h4 className="font-bold text-stone-900 text-xs truncate" title={img.source}>
-                                {img.source}
-                              </h4>
-                              <p className="text-[10px] text-stone-500 truncate">
-                                Álbum: <span className="font-medium text-stone-700">{img.albumTitle}</span>
-                              </p>
-                            </div>
-
-                            {/* URL and Copy */}
-                            <div className="flex gap-1.5 mt-2">
-                              <input
-                                type="text"
-                                readOnly
-                                value={img.url}
-                                className="flex-grow bg-white border border-stone-200 rounded-lg px-2 py-1 text-[10px] font-mono text-stone-500 focus:outline-none focus:ring-1 focus:ring-amber-900 select-all"
-                              />
-                              <button
-                                onClick={() => handleCopyUrl(img.url)}
-                                className="bg-amber-900 hover:bg-amber-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all flex items-center gap-1 shrink-0"
-                              >
-                                {copiedUrl === img.url ? (
-                                  <>
-                                    <Check className="w-3 h-3" />
-                                    Copiado
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3 h-3" />
-                                    Copiar
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })()}
+                  })()
+                )}
               </div>
             </div>
           )}
