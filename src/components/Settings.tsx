@@ -23,7 +23,7 @@ export const Settings = ({
   onUpdateUser
 }: SettingsProps) => {
   const { t, language } = useLanguage();
-  const [activeSection, setActiveSection] = useState<'general' | 'ai' | 'security' | 'images'>('general');
+  const [activeSection, setActiveSection] = useState<'general' | 'ai' | 'security' | 'images' | 'opensource'>('general');
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100');
   const [isSaved, setIsSaved] = useState(false);
@@ -106,6 +106,16 @@ export const Settings = ({
           >
             <Image className="w-4 h-4" />
             {t('settings.sidebarImages')}
+          </button>
+
+          <button
+            onClick={() => setActiveSection('opensource')}
+            className={`w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition cursor-pointer ${
+              activeSection === 'opensource' ? 'bg-amber-900 text-white shadow-sm' : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+            }`}
+          >
+            <Code className="w-4 h-4" />
+            {t('settings.sidebarOpenSource')}
           </button>
         </div>
 
@@ -500,6 +510,90 @@ export const Settings = ({
                     );
                   })()
                 )}
+              </div>
+            </div>
+          )}
+
+          {activeSection === 'opensource' && (
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-xl font-serif font-bold text-stone-900 mb-2">{t('settings.openSourceTitle')}</h2>
+                <p className="text-xs text-stone-500 mb-6">{t('settings.openSourceDesc')}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {/* MIT License Card */}
+                  <div className="p-5 border border-stone-200 rounded-3xl bg-stone-50/50 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="w-8 h-8 rounded-lg bg-amber-900/10 flex items-center justify-center text-amber-900">
+                        <Code className="w-4 h-4" />
+                      </div>
+                      <h3 className="font-serif font-bold text-base text-stone-900">{t('settings.openSourceLicenseTitle')}</h3>
+                      <p className="text-xs text-stone-500 leading-relaxed">{t('settings.openSourceLicenseDesc')}</p>
+                    </div>
+                    <div className="pt-3 font-mono text-[9px] bg-white border border-stone-200 p-3 rounded-xl max-h-36 overflow-y-auto text-stone-400 select-all leading-normal whitespace-pre-wrap">
+                      {`MIT License\n\nCopyright (c) 2026 AnMemoryNest Contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.`}
+                    </div>
+                  </div>
+
+                  {/* Render Deployment Card */}
+                  <div className="p-5 border border-stone-200 rounded-3xl bg-stone-50/50 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div className="w-8 h-8 rounded-lg bg-amber-900/10 flex items-center justify-center text-amber-900">
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 2L2 22h20L12 2zm0 4.8L18.4 19H5.6L12 6.8z"/>
+                        </svg>
+                      </div>
+                      <h3 className="font-serif font-bold text-base text-stone-900">{t('settings.openSourceRenderTitle')}</h3>
+                      <p className="text-xs text-stone-500 leading-relaxed">{t('settings.openSourceRenderDesc')}</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="bg-stone-900 p-3 rounded-xl text-[10px] font-mono text-stone-300 overflow-x-auto max-h-36">
+                        <pre className="whitespace-pre">
+{`# render.yaml
+services:
+  - type: web
+    name: anmemorynest
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start`}
+                        </pre>
+                      </div>
+                      
+                      <a
+                        href="https://render.com/deploy"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full bg-[#4623E9] hover:bg-[#381bc4] text-white py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition shadow-sm cursor-pointer"
+                      >
+                        <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+                        </svg>
+                        {t('settings.openSourceDeployBtn')}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-amber-900/5 border border-amber-900/10 p-5 rounded-3xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="space-y-1 text-center sm:text-left">
+                    <h4 className="font-serif font-bold text-sm text-stone-900">
+                      {language === 'es' ? '¿Quieres ver o clonar el código en GitHub?' : 'Want to view or clone the code on GitHub?'}
+                    </h4>
+                    <p className="text-xs text-stone-500">
+                      {language === 'es' ? 'Accede a la base de código libre, reporta problemas o contribuye.' : 'Access the free codebase, report issues, or contribute.'}
+                    </p>
+                  </div>
+                  <a
+                    href="https://github.com/anappwilos/AnMemoryNest"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bg-stone-900 hover:bg-stone-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition shrink-0 cursor-pointer"
+                  >
+                    <Code className="w-4 h-4" />
+                    GitHub Repository
+                  </a>
+                </div>
               </div>
             </div>
           )}

@@ -1,7 +1,16 @@
 {
-  "name": "react-example",
-  "private": true,
-  "version": "0.0.0",
+  "name": "anmemorynest",
+  "version": "1.0.0",
+  "description": "AnMemoryNest - Cápsula del Tiempo Inteligente y Familiar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anappwilos/AnMemoryNest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anappwilos/AnMemoryNest/issues"
+  },
+  "homepage": "https://github.com/anappwilos/AnMemoryNest#readme",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
