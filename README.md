@@ -1,39 +1,43 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# AnMemoryNest - Smart Family Time Capsule
 
-# AnMemoryNest - Cápsula del Tiempo Inteligente y Familiar
+AnMemoryNest is an open-source platform designed to help families capture, organize, and preserve their collective memories. It combines collaborative photo galleries, written family stories, and voice memos with a smart Memory Assistant powered by the Gemini API.
 
-AnMemoryNest es una plataforma de código abierto diseñada para ayudar a las familias a capturar, organizar y preservar sus recuerdos colectivos. Combina galerías de fotos colaborativas, relatos familiares escritos y notas de voz con un Asistente de Memoria inteligente impulsado por la API de Gemini.
+## 🚀 Deploy to Render (One-Click Deploy)
 
-## 🚀 Desplegar en Render (One-Click Deploy)
-
-Puedes desplegar tu propia instancia de AnMemoryNest en la nube utilizando **Render** con un solo clic. Haz clic en el botón de abajo para comenzar:
+You can deploy your own AnMemoryNest instance to the cloud using **Render** with just one click. Click the button below to get started:
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
-El archivo `render.yaml` incluido configurará automáticamente el servicio web con la configuración de compilación y ejecución correcta. Asegúrate de configurar la variable de entorno `GEMINI_API_KEY` en el panel de Render para habilitar las características del Asistente IA.
+The included `render.yaml` file will automatically configure the web service with the correct build and run settings. Make sure to set the `GEMINI_API_KEY` environment variable in the Render panel to enable the AI ​​Assistant features.
 
-## 💻 Ejecución Local
+## 💻 Local Run
 
-**Requisitos:** Node.js (versión 18 o superior)
+**Requirements:** Node.js (version 18 or higher)
 
-1. Instala las dependencias del proyecto:
-   ```bash
-   npm install
-   ```
-2. Configura tu clave API de Gemini en un archivo `.env` en la raíz del proyecto:
-   ```env
-   GEMINI_API_KEY=tu_clave_api_aquí
-   ```
-3. Inicia el servidor de desarrollo local:
-   ```bash
-   npm run dev
-   ```
+1. Install project dependencies:
 
-El servidor se ejecutará localmente en `http://localhost:3000`.
+``bash
 
-## 📄 Licencia
+npm install
 
-Este proyecto está licenciado bajo la **Licencia MIT**. Es un software 100% libre y de código abierto. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+``
+2. Set your Gemini API key in a `.env` file in the project root:
 
+``env
+
+GEMINI_API_KEY=your_api_key_here
+
+``
+3. Start the local development server:
+
+``bash
+
+npm run dev
+
+``
+
+The server will run locally at `http://localhost:3000`.
+
+## 📄 License
+
+This project is licensed under the **MIT License**. It is 100% free and open-source software. See the [LICENSE](LICENSE) file for more details.
