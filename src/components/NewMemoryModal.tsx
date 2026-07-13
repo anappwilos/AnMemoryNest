@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { X, Camera, Mic, MapPin, Calendar, Check, AlertCircle } from 'lucide-react';
+import { X, Camera, Mic, MapPin, Calendar, Check } from 'lucide-react';
 import { Album } from '../types';
 import { PROJECT_IMAGES } from '../lib/images';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NewMemoryModalProps {
   albums: Album[];
@@ -30,6 +31,7 @@ const PRESET_IMAGES = [
 ];
 
 export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewMemoryModalProps) => {
+  const { t, language } = useLanguage();
   const [selectedAlbumId, setSelectedAlbumId] = useState(defaultAlbumId || albums[0]?.id || '');
   const [caption, setCaption] = useState('');
   const [date, setDate] = useState('2026-07-12');
@@ -65,7 +67,7 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
     e.preventDefault();
     onSave(selectedAlbumId, {
       imageUrl: selectedImage,
-      caption: caption || 'Un hermoso recuerdo guardado.',
+      caption: caption || (language === 'es' ? 'Un hermoso recuerdo guardado.' : 'A beautiful memory preserved.'),
       date,
       location,
       voiceDuration: recordedDuration || undefined
@@ -83,35 +85,43 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
         {/* Header */}
         <div className="p-6 border-b border-stone-200 bg-white flex items-center justify-between">
           <div>
-            <h3 className="font-serif text-2xl text-stone-900 font-bold">Añadir Nuevo Recuerdo</h3>
-            <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold">Captura la voz y las historias detrás de la foto</p>
+            <h3 className="font-serif text-2xl text-stone-900 font-bold">{t('newMemory.title')}</h3>
+            <p className="text-xs text-stone-500 uppercase tracking-wider font-semibold">{t('newMemory.subtitle')}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition text-stone-500">
+          <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition text-stone-500 cursor-pointer">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {success ? (
           <div className="p-12 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center animate-bounce">
               <Check className="w-10 h-10" />
             </div>
-            <h4 className="font-serif text-2xl text-stone-950 font-bold">¡Recuerdo Preservado!</h4>
-            <p className="text-stone-600 max-w-md">Tu historia ha sido guardada de manera segura en la cápsula y compartida con el grupo familiar.</p>
+            <h4 className="font-serif text-2xl text-stone-950 font-bold">
+              {language === 'es' ? '¡Recuerdo Preservado!' : 'Memory Preserved!'}
+            </h4>
+            <p className="text-stone-600 max-w-md">
+              {language === 'es' 
+                ? 'Tu historia ha sido guardada de manera segura en la cápsula y compartida con el grupo familiar.' 
+                : 'Your story has been safely saved in the capsule and shared with the family group.'}
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-6 flex-grow">
             
             {/* Album Selector */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Selecciona el Álbum de Destino</label>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">
+                {language === 'es' ? 'Selecciona el Álbum de Destino' : 'Select Destination Album'}
+              </label>
               <select 
                 value={selectedAlbumId} 
                 onChange={(e) => setSelectedAlbumId(e.target.value)}
                 className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none"
                 required
               >
-                <option value="">-- Selecciona un álbum --</option>
+                <option value="">{language === 'es' ? '-- Selecciona un álbum --' : '-- Select an album --'}</option>
                 {albums.map(a => (
                   <option key={a.id} value={a.id}>{a.title}</option>
                 ))}
@@ -120,7 +130,9 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
 
             {/* Photo Selection Area */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Sube o Elige una Fotografía</label>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">
+                {language === 'es' ? 'Sube o Elige una Fotografía' : 'Upload or Choose a Photograph'}
+              </label>
               
               <div 
                 className={`border-2 border-dashed rounded-2xl p-6 text-center transition cursor-pointer bg-white ${
@@ -132,21 +144,27 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
               >
                 <div className="flex flex-col items-center justify-center space-y-2">
                   <Camera className="w-10 h-10 text-stone-400" />
-                  <p className="text-sm font-medium text-stone-700">Arrastra tu fotografía aquí o selecciona una del archivo</p>
-                  <p className="text-xs text-stone-400">Archivos PNG, JPG o WEBP de hasta 10MB</p>
+                  <p className="text-sm font-medium text-stone-700">
+                    {language === 'es' ? 'Arrastra tu fotografía aquí o selecciona una del archivo' : 'Drag your photograph here or select one from files'}
+                  </p>
+                  <p className="text-xs text-stone-400">
+                    {language === 'es' ? 'Archivos PNG, JPG o WEBP de hasta 10MB' : 'PNG, JPG or WEBP files up to 10MB'}
+                  </p>
                 </div>
               </div>
 
               {/* Preset Carousel */}
               <div className="mt-4">
-                <p className="text-xs text-stone-500 mb-2">O selecciona una imagen de demostración:</p>
+                <p className="text-xs text-stone-500 mb-2">
+                  {language === 'es' ? 'O selecciona una imagen de demostración:' : 'Or select a demo image:'}
+                </p>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {PRESET_IMAGES.map((img, idx) => (
                     <button 
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImage(img)}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition ${
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition cursor-pointer ${
                         selectedImage === img ? 'border-amber-900 scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'
                       }`}
                     >
@@ -159,13 +177,15 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
 
             {/* Caption / Story */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Relato del Recuerdo (¿Qué ocurrió?)</label>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">
+                {language === 'es' ? 'Relato del Recuerdo (¿Qué ocurrió?)' : 'Memory Story (What happened?)'}
+              </label>
               <textarea 
                 value={caption} 
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="Describe quién aparece, qué estabais celebrando o qué sentías en ese instante..."
+                placeholder={language === 'es' ? 'Describe quién aparece, qué estabais celebrando o qué sentías en ese instante...' : 'Describe who appears, what you were celebrating, or what you felt in that instant...'}
                 rows={3}
-                className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none"
+                className="w-full bg-white border border-stone-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none text-sm"
                 required
               />
             </div>
@@ -173,7 +193,9 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
             {/* Metadata (Date & Location) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Fecha</label>
+                <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">
+                  {language === 'es' ? 'Fecha' : 'Date'}
+                </label>
                 <div className="relative">
                   <input 
                     type="date" 
@@ -185,13 +207,15 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">Ubicación</label>
+                <label className="block text-xs font-bold text-stone-500 uppercase tracking-widest mb-2">
+                  {language === 'es' ? 'Ubicación' : 'Location'}
+                </label>
                 <div className="relative">
                   <input 
                     type="text" 
                     value={location} 
                     onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Ej. Playa de Levante, Benidorm"
+                    placeholder={language === 'es' ? 'Ej. Playa de Levante, Benidorm' : 'e.g., Levante Beach, Benidorm'}
                     className="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-amber-900 focus:outline-none text-sm"
                   />
                   <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-stone-400" />
@@ -204,12 +228,15 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
               <div className="space-y-1">
                 <h4 className="font-serif font-bold text-stone-900 flex items-center gap-2">
                   <Mic className="w-4 h-4 text-amber-950" />
-                  Suma su voz (Legacy Audio)
+                  {language === 'es' ? 'Suma su voz (Legacy Audio)' : 'Add their voice (Legacy Audio)'}
                 </h4>
-                <p className="text-xs text-stone-600">Graba la voz de tus familiares narrando la historia detrás de este instante.</p>
+                <p className="text-xs text-stone-600">
+                  {language === 'es' ? 'Graba la voz de tus familiares narrando la historia detrás de este instante.' : 'Record the voice of your relatives narrating the story behind this instant.'}
+                </p>
                 {recordedDuration && (
                   <p className="text-xs text-emerald-800 font-bold flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" /> Grabación de voz adjunta ({recordedDuration})
+                    <Check className="w-3.5 h-3.5" /> 
+                    {language === 'es' ? `Grabación de voz adjunta (${recordedDuration})` : `Voice recording attached (${recordedDuration})`}
                   </p>
                 )}
               </div>
@@ -218,19 +245,19 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
                   <button 
                     type="button" 
                     onClick={handleStopRecording} 
-                    className="bg-red-600 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 animate-pulse"
+                    className="bg-red-600 text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 animate-pulse cursor-pointer"
                   >
                     <span className="w-2 h-2 rounded-full bg-white block animate-ping"></span>
-                    Parar ({seconds}s)
+                    {language === 'es' ? `Parar (${seconds}s)` : `Stop (${seconds}s)`}
                   </button>
                 ) : (
                   <button 
                     type="button" 
                     onClick={handleStartRecording} 
-                    className="bg-amber-900 text-white hover:bg-amber-800 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition"
+                    className="bg-amber-900 text-white hover:bg-amber-800 px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 transition cursor-pointer"
                   >
                     <Mic className="w-3.5 h-3.5" />
-                    {recordedDuration ? 'Grabar de nuevo' : 'Grabar voz'}
+                    {recordedDuration ? (language === 'es' ? 'Grabar de nuevo' : 'Record again') : (language === 'es' ? 'Grabar voz' : 'Record voice')}
                   </button>
                 )}
               </div>
@@ -239,10 +266,10 @@ export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewM
             {/* Submit */}
             <button 
               type="submit" 
-              className="w-full bg-amber-900 text-white font-serif text-lg font-bold py-3.5 rounded-xl hover:bg-amber-800 flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition"
+              className="w-full bg-amber-900 text-white font-serif text-lg font-bold py-3.5 rounded-xl hover:bg-amber-800 flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition cursor-pointer"
             >
               <Check className="w-5 h-5" />
-              Preservar este Recuerdo
+              {language === 'es' ? 'Preservar este Recuerdo' : 'Preserve this Memory'}
             </button>
 
           </form>

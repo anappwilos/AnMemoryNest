@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Camera, BookOpen, Search, Sparkles, SlidersHorizontal, ArrowRight, UserCheck } from 'lucide-react';
+import { Camera, Search, ArrowRight } from 'lucide-react';
 import { Album } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface DashboardProps {
   albums: Album[];
@@ -11,6 +12,7 @@ interface DashboardProps {
 }
 
 export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, onNavigateToTab }: DashboardProps) => {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
 
@@ -27,8 +29,8 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
       {/* Catalog Search and Filters Section */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
-          <h3 className="text-xl font-serif text-stone-950 font-bold">Tus Álbumes</h3>
-          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold mt-0.5">Cápsulas de tiempo privadas</p>
+          <h3 className="text-xl font-serif text-stone-950 font-bold">{t('dashboard.title')}</h3>
+          <p className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold mt-0.5">{language === 'es' ? 'Cápsulas de tiempo privadas' : 'Private time capsules'}</p>
         </div>
 
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
@@ -38,8 +40,8 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
               type="text" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar..." 
-              className="w-full pl-8 pr-3 py-1.5 bg-white border border-stone-200 rounded-md text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+              placeholder={t('dashboard.searchPlaceholder')} 
+              className="w-full pl-8 pr-3 py-1.5 bg-white border border-stone-200 rounded-md text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none"
             />
             <Search className="absolute left-2.5 top-2 w-3 h-3 text-stone-400" />
           </div>
@@ -48,12 +50,12 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
           <select 
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="bg-white border border-stone-200 rounded-md px-3 py-1.5 text-xs font-semibold focus:ring-1 focus:ring-primary focus:outline-none text-stone-600"
+            className="bg-white border border-stone-200 rounded-md px-3 py-1.5 text-xs font-semibold focus:ring-1 focus:ring-amber-900 focus:outline-none text-stone-600"
           >
-            <option value="all">Categorías</option>
-            <option value="Familia">Familia</option>
-            <option value="Amigos">Amigos</option>
-            <option value="Compañeros">Compañeros</option>
+            <option value="all">{language === 'es' ? 'Categorías' : 'Categories'}</option>
+            <option value="Familia">{t('dashboard.categoryFamily')}</option>
+            <option value="Amigos">{t('dashboard.categoryFriends')}</option>
+            <option value="Compañeros">{t('dashboard.categoryColleagues')}</option>
           </select>
 
         </div>
@@ -62,12 +64,12 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
       {/* Album Grid */}
       {filteredAlbums.length === 0 ? (
         <div className="text-center p-12 bg-white border border-stone-100 rounded-2xl space-y-3">
-          <p className="text-stone-500 font-serif text-sm">No hemos encontrado ningún álbum.</p>
+          <p className="text-stone-500 font-serif text-sm">{t('dashboard.noAlbums')}</p>
           <button 
             onClick={() => { setSearchQuery(''); setCategoryFilter('all'); }}
-            className="text-primary font-bold text-xs hover:underline"
+            className="text-amber-900 font-bold text-xs hover:underline cursor-pointer"
           >
-            Limpiar filtros
+            {language === 'es' ? 'Limpiar filtros' : 'Clear filters'}
           </button>
         </div>
       ) : (
@@ -86,7 +88,7 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
                   </span>
                 </div>
                 
-                <h3 className="font-serif text-base text-stone-950 font-bold group-hover:text-primary transition-colors line-clamp-1">{album.title}</h3>
+                <h3 className="font-serif text-base text-stone-950 font-bold group-hover:text-amber-900 transition-colors line-clamp-1">{album.title}</h3>
                 <p className="text-[10px] text-stone-400 font-medium mb-3 flex items-center gap-1">
                   {album.location}
                 </p>
@@ -110,8 +112,8 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
                   )}
                 </div>
                 
-                <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1 group-hover:text-primary transition-colors">
-                  Explorar <ArrowRight className="w-3 h-3" />
+                <span className="text-[9px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1 group-hover:text-amber-900 transition-colors">
+                  {language === 'es' ? 'Explorar' : 'Explore'} <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </div>
@@ -121,9 +123,9 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
         <div className="flex flex-wrap gap-3 pt-4">
             <button 
               onClick={onAddMemoryClick} 
-              className="bg-primary text-white hover:opacity-90 px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition"
+              className="bg-amber-900 text-white hover:opacity-90 px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition cursor-pointer"
             >
-              <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
+              <Camera className="w-3.5 h-3.5" /> {t('dashboard.addMemoryBtn')}
             </button>
           </div>
     </main>

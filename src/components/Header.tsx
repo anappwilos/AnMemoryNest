@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Leaf, Bell, Camera, User, LogOut, Sparkles, Settings } from 'lucide-react';
+import { Leaf, Bell, Camera, User, LogOut, Sparkles, Settings as SettingsIcon } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeaderProps {
   currentTab: string;
@@ -9,13 +10,18 @@ interface HeaderProps {
 }
 
 export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: HeaderProps) => {
+  const { language, setLanguage, t } = useLanguage();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
-  const notifications = [
+  const notifications = language === 'es' ? [
     { id: 1, text: 'Mamá ha añadido un nuevo recuerdo a "Vacaciones en Benidorm 2026"', time: 'Hace 5m' },
     { id: 2, text: 'Tu asistente de IA ha identificado una fotografía similar', time: 'Hace 1h' },
     { id: 3, text: 'Carlos Ruiz ha respondido al grupo de conversación', time: 'Hace 3h' }
+  ] : [
+    { id: 1, text: 'Mom has added a new memory to "Benidorm Vacations 2026"', time: '5m ago' },
+    { id: 2, text: 'Your AI Assistant identified a similar photograph', time: '1h ago' },
+    { id: 3, text: 'Carlos Ruiz replied to the conversation group', time: '3h ago' }
   ];
 
   return (
@@ -36,8 +42,8 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
         {/* Navigation tabs */}
         <nav className="hidden md:flex gap-6">
           {[
-            { id: 'Home', label: 'Inicio' },
-            { id: 'Legacy', label: 'Legado Digital' }
+            { id: 'Home', label: t('nav.home') },
+            { id: 'Legacy', label: t('nav.legacy') }
           ].map((tab) => (
             <button 
               key={tab.id} 
@@ -59,6 +65,26 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
       {/* Header Right Interactions */}
       <div className="flex items-center gap-4 relative">
         
+        {/* Language Switcher */}
+        <div className="flex items-center bg-stone-100 rounded-xl p-0.5 border border-stone-200">
+          <button
+            onClick={() => setLanguage('es')}
+            className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+              language === 'es' ? 'bg-amber-900 text-white shadow-sm' : 'text-stone-500 hover:text-stone-950'
+            }`}
+          >
+            ES
+          </button>
+          <button
+            onClick={() => setLanguage('en')}
+            className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
+              language === 'en' ? 'bg-amber-900 text-white shadow-sm' : 'text-stone-500 hover:text-stone-950'
+            }`}
+          >
+            EN
+          </button>
+        </div>
+
         {/* Notifications Icon Button */}
         <div className="relative">
           <button 
@@ -73,8 +99,8 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
           {notificationsOpen && (
             <div className="absolute right-0 mt-2 w-80 bg-white border border-stone-200 rounded-2xl shadow-xl p-4 z-40 space-y-3">
               <div className="flex justify-between items-center border-b border-stone-100 pb-2">
-                <span className="text-xs font-bold text-stone-500 uppercase tracking-widest">Notificaciones</span>
-                <span className="text-[10px] text-amber-900 font-bold cursor-pointer hover:underline">Marcar todo</span>
+                <span className="text-xs font-bold text-stone-500 uppercase tracking-widest">{t('nav.notifications')}</span>
+                <span className="text-[10px] text-amber-900 font-bold cursor-pointer hover:underline">{t('nav.markAllRead')}</span>
               </div>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {notifications.map((n) => (
@@ -106,26 +132,26 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
               
               <button 
                 onClick={() => { onTabChange('Legacy'); setProfileOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-stone-50 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition"
+                className="w-full text-left px-3 py-2 hover:bg-stone-50 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition cursor-pointer"
               >
                 <User className="w-4 h-4 text-stone-400" />
-                Mi Perfil y Legado
+                {t('nav.profile')}
               </button>
 
               <button 
                 onClick={() => { onTabChange('Settings'); setProfileOpen(false); }}
-                className="w-full text-left px-3 py-2 hover:bg-stone-50 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition"
+                className="w-full text-left px-3 py-2 hover:bg-stone-50 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition cursor-pointer"
               >
-                <Settings className="w-4 h-4 text-stone-400" />
-                Ajustes
+                <SettingsIcon className="w-4 h-4 text-stone-400" />
+                {t('nav.settings')}
               </button>
               
               <button 
                 onClick={onLogout}
-                className="w-full text-left px-3 py-2 hover:bg-red-50 hover:text-red-700 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition"
+                className="w-full text-left px-3 py-2 hover:bg-red-50 hover:text-red-700 rounded-lg text-xs font-bold text-stone-700 flex items-center gap-2 transition cursor-pointer"
               >
                 <LogOut className="w-4 h-4 text-stone-400 group-hover:text-red-700" />
-                Cerrar Sesión
+                {t('nav.logout')}
               </button>
             </div>
           )}

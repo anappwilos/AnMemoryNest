@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Camera, Share2, MapPin, Calendar, Heart, Users, ArrowLeft, Send, Mic, FileText, Check } from 'lucide-react';
+import { Camera, Share2, MapPin, Calendar, Heart, Users, ArrowLeft, Send, Mic } from 'lucide-react';
 import { Album, AISuggestion } from '../types';
 import { MemoryAssistant } from './MemoryAssistant';
 import { PROJECT_IMAGES } from '../lib/images';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AlbumDetailProps {
   album: Album;
@@ -25,7 +26,8 @@ export const AlbumDetail = ({
   onAddMemoryClick, 
   onUpdateAlbum 
 }: AlbumDetailProps) => {
-  const [activeTab, setActiveTab] = useState('Bitácora');
+  const { t, language } = useLanguage();
+  const [activeTab, setActiveTab] = useState<'logbook' | 'memories' | 'people' | 'conversation' | 'ai'>('logbook');
   const [chatMessage, setChatMessage] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [inviteSuccess, setInviteSuccess] = useState(false);
@@ -37,8 +39,7 @@ export const AlbumDetail = ({
     e.preventDefault();
     if (!inviteName.trim() || !inviteRole.trim() || !inviteEmail.trim()) return;
 
-    // Use a high-quality aesthetic avatar placeholder based on relation/gender
-    const isMale = ['padre', 'tío', 'hermano', 'primo', 'abuelo'].some(r => inviteRole.toLowerCase().includes(r));
+    const isMale = ['padre', 'tío', 'hermano', 'primo', 'abuelo', 'father', 'uncle', 'brother', 'cousin', 'grandfather'].some(r => inviteRole.toLowerCase().includes(r));
     const avatarUrl = isMale 
       ? PROJECT_IMAGES.AVATARS.DEFAULT_MALE
       : PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE;
@@ -69,10 +70,10 @@ export const AlbumDetail = ({
 
     const newMessage = {
       id: `c_${Date.now()}`,
-      author: 'Yo (Ana)',
+      author: language === 'es' ? 'Yo (Ana)' : 'Me (Ana)',
       avatar: PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE,
       message: chatMessage,
-      date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+      date: `${language === 'es' ? 'Hoy' : 'Today'} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
     };
 
     const updatedAlbum = {
@@ -86,13 +87,13 @@ export const AlbumDetail = ({
   const handleSendPresetAudio = () => {
     const newAudio = {
       id: `c_${Date.now()}`,
-      author: 'Yo (Ana)',
+      author: language === 'es' ? 'Yo (Ana)' : 'Me (Ana)',
       avatar: PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE,
-      date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+      date: `${language === 'es' ? 'Hoy' : 'Today'} · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
       isAudio: true,
       audioUrl: '#',
       audioDuration: '0:32',
-      message: 'HISTORIA DE LA PLAYA - VOZ'
+      message: language === 'es' ? 'HISTORIA DE LA PLAYA - VOZ' : 'BEACH STORY - VOICE'
     };
 
     const updatedAlbum = {
@@ -104,16 +105,18 @@ export const AlbumDetail = ({
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'Recuerdos':
+      case 'memories':
         return (
           <div className="w-full space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="font-serif text-2xl text-stone-900 font-bold">Galería de Recuerdos</h3>
+              <h3 className="font-serif text-2xl text-stone-900 font-bold">
+                {language === 'es' ? 'Galería de Recuerdos' : 'Gallery of Memories'}
+              </h3>
               <button 
                 onClick={onAddMemoryClick} 
-                className="bg-primary text-white hover:opacity-90 text-xs font-bold px-4 py-2 rounded-md flex items-center gap-2 transition"
+                className="bg-amber-900 text-white hover:bg-amber-800 text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer"
               >
-                <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
+                <Camera className="w-3.5 h-3.5" /> {language === 'es' ? 'Añadir Recuerdo' : 'Add Memory'}
               </button>
             </div>
             
@@ -121,7 +124,7 @@ export const AlbumDetail = ({
               {album.memories.map((m) => (
                 <div 
                   key={m.id} 
-                  className="group cursor-pointer bg-white p-2 rounded-xl border border-stone-100 shadow-sm hover:shadow transition"
+                  className="group cursor-pointer bg-white p-2 rounded-xl border border-stone-100 shadow-sm hover:shadow transition-all"
                   onClick={() => setSelectedPhoto(m.imageUrl)}
                 >
                   <div className="aspect-square overflow-hidden rounded-lg bg-stone-100 relative">
@@ -134,13 +137,19 @@ export const AlbumDetail = ({
           </div>
         );
 
-      case 'Personas':
+      case 'people':
         return (
           <div className="w-full space-y-6">
             <div className="bg-white p-6 rounded-2xl border border-stone-100 shadow-sm space-y-6">
               <div>
-                <h3 className="font-serif text-2xl text-stone-950 font-bold">Álbum Colaborativo</h3>
-                <p className="text-sm text-stone-500">Familiares y amigos autorizados para ver y aportar a este álbum específico.</p>
+                <h3 className="font-serif text-2xl text-stone-950 font-bold">
+                  {language === 'es' ? 'Álbum Colaborativo' : 'Collaborative Album'}
+                </h3>
+                <p className="text-sm text-stone-500">
+                  {language === 'es' 
+                    ? 'Familiares y amigos autorizados para ver y aportar a este álbum específico.' 
+                    : 'Family and friends authorized to view and contribute to this specific album.'}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -156,7 +165,9 @@ export const AlbumDetail = ({
                       <h4 className="font-bold text-stone-900 text-sm flex items-center gap-1.5">
                         {m.name}
                         {m.typing && (
-                          <span className="text-[10px] text-primary animate-pulse font-normal">Escribiendo...</span>
+                          <span className="text-[10px] text-amber-900 animate-pulse font-normal">
+                            {language === 'es' ? 'Escribiendo...' : 'Typing...'}
+                          </span>
                         )}
                       </h4>
                       <p className="text-[10px] text-stone-500">{m.role}</p>
@@ -167,33 +178,39 @@ export const AlbumDetail = ({
 
               {/* Invitation option inside Personas tab */}
               <div className="pt-6 border-t border-stone-100">
-                <h4 className="font-bold text-stone-800 text-sm mb-3">Agregar / Invitar Persona al Álbum</h4>
+                <h4 className="font-bold text-stone-800 text-sm mb-3">
+                  {language === 'es' ? 'Agregar / Invitar Persona al Álbum' : 'Add / Invite Person to Album'}
+                </h4>
                 <form onSubmit={handleInvite} className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Nombre</label>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
+                      {language === 'es' ? 'Nombre' : 'Name'}
+                    </label>
                     <input 
                       type="text" 
                       value={inviteName}
                       onChange={(e) => setInviteName(e.target.value)}
-                      placeholder="Ej. Tía Elena" 
+                      placeholder={language === 'es' ? 'Ej. Tía Elena' : 'e.g., Aunt Elena'} 
                       required
                       className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none" 
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Parentesco / Rol</label>
+                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">
+                      {language === 'es' ? 'Parentesco / Rol' : 'Relationship / Role'}
+                    </label>
                     <input 
                       type="text" 
                       value={inviteRole}
                       onChange={(e) => setInviteRole(e.target.value)}
-                      placeholder="Ej. Tía / Fotógrafa" 
+                      placeholder={language === 'es' ? 'Ej. Tía / Fotógrafa' : 'e.g., Aunt / Photographer'} 
                       required
                       className="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-amber-900 focus:outline-none" 
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-grow">
-                      <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Correo Electrónico</label>
+                      <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">{t('auth.emailLabel')}</label>
                       <input 
                         type="email" 
                         value={inviteEmail}
@@ -205,28 +222,32 @@ export const AlbumDetail = ({
                     </div>
                     <button 
                       type="submit"
-                      className="bg-amber-900 hover:bg-amber-800 text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0 h-9 transition-colors"
+                      className="bg-amber-900 hover:bg-amber-800 text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0 h-9 transition-colors cursor-pointer"
                     >
-                      Invitar
+                      {language === 'es' ? 'Invitar' : 'Invite'}
                     </button>
                   </div>
                 </form>
                 {inviteSuccess && (
-                  <p className="text-[10px] text-emerald-800 font-bold mt-2">✓ ¡Invitación enviada y persona agregada con éxito!</p>
+                  <p className="text-[10px] text-emerald-800 font-bold mt-2">
+                    {language === 'es' ? '✓ ¡Invitación enviada y persona agregada con éxito!' : '✓ Invitation sent and person added successfully!'}
+                  </p>
                 )}
               </div>
             </div>
           </div>
         );
 
-      case 'Conversación':
+      case 'conversation':
         return (
           <div className="w-full grid md:grid-cols-3 gap-8">
             
             {/* Conversation Flow */}
             <div className="md:col-span-2 space-y-6 flex flex-col justify-between h-[550px] bg-white border border-stone-100 rounded-2xl p-6 shadow-sm">
               <div className="overflow-y-auto space-y-4 flex-grow pr-2">
-                <span className="text-[10px] font-bold text-stone-400 block text-center uppercase tracking-widest my-2">Historial</span>
+                <span className="text-[10px] font-bold text-stone-400 block text-center uppercase tracking-widest my-2">
+                  {language === 'es' ? 'Historial' : 'History'}
+                </span>
                 
                 {album.conversation.map((c) => (
                   <div key={c.id} className="space-y-1">
@@ -238,8 +259,8 @@ export const AlbumDetail = ({
 
                     <div className="pl-7">
                       {c.isAudio ? (
-                        <div className="bg-primary text-white p-3 rounded-xl border border-primary/20 shadow-sm flex items-center gap-3 max-w-sm">
-                          <button className="w-7 h-7 rounded-full bg-white text-primary flex items-center justify-center font-bold text-xs shadow">
+                        <div className="bg-amber-900 text-white p-3 rounded-xl border border-amber-900/20 shadow-sm flex items-center gap-3 max-w-sm">
+                          <button className="w-7 h-7 rounded-full bg-white text-amber-950 flex items-center justify-center font-bold text-xs shadow cursor-pointer">
                             ▶
                           </button>
                           <div className="flex-grow">
@@ -271,8 +292,8 @@ export const AlbumDetail = ({
                   <button 
                     type="button" 
                     onClick={handleSendPresetAudio}
-                    title="Enviar nota de voz demo" 
-                    className="p-2.5 bg-stone-50 hover:bg-stone-100 text-primary rounded-md border border-stone-100 transition"
+                    title={language === 'es' ? 'Enviar nota de voz demo' : 'Send demo voice note'} 
+                    className="p-2.5 bg-stone-50 hover:bg-stone-100 text-amber-900 rounded-md border border-stone-100 transition cursor-pointer"
                   >
                     <Mic className="w-4 h-4" />
                   </button>
@@ -280,10 +301,10 @@ export const AlbumDetail = ({
                     type="text" 
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
-                    placeholder="Escribe un relato..." 
-                    className="flex-grow bg-stone-50 border border-stone-100 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-primary focus:outline-none" 
+                    placeholder={language === 'es' ? 'Escribe un relato...' : 'Write a story...'} 
+                    className="flex-grow bg-stone-50 border border-stone-100 rounded-md px-3 py-2 text-sm focus:ring-1 focus:ring-amber-900 focus:outline-none" 
                   />
-                  <button type="submit" className="p-2.5 bg-primary hover:opacity-90 text-white rounded-md shadow transition">
+                  <button type="submit" className="p-2.5 bg-amber-900 hover:bg-amber-800 text-white rounded-md shadow transition cursor-pointer">
                     <Send className="w-4 h-4" />
                   </button>
                 </div>
@@ -294,7 +315,9 @@ export const AlbumDetail = ({
             <div className="space-y-6">
               {/* Online members */}
               <div className="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm space-y-3">
-                <h4 className="font-serif font-bold text-stone-900 text-sm">Familia en línea</h4>
+                <h4 className="font-serif font-bold text-stone-900 text-sm">
+                  {language === 'es' ? 'Familia en línea' : 'Family online'}
+                </h4>
                 <div className="space-y-2">
                   {album.members.map((m, idx) => (
                     <div key={idx} className="flex justify-between items-center text-[10px]">
@@ -308,11 +331,17 @@ export const AlbumDetail = ({
                         <span className="font-bold text-stone-700">{m.name}</span>
                       </div>
                       {m.typing ? (
-                        <span className="text-[9px] text-primary font-bold uppercase animate-pulse">Escribiendo...</span>
+                        <span className="text-[9px] text-amber-900 font-bold uppercase animate-pulse">
+                          {language === 'es' ? 'Escribiendo...' : 'Typing...'}
+                        </span>
                       ) : m.online ? (
-                        <span className="text-[9px] text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm uppercase">Activo</span>
+                        <span className="text-[9px] text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded-sm uppercase">
+                          {language === 'es' ? 'Activo' : 'Active'}
+                        </span>
                       ) : (
-                        <span className="text-[9px] text-stone-400">Inactivo</span>
+                        <span className="text-[9px] text-stone-400">
+                          {language === 'es' ? 'Inactivo' : 'Inactive'}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -321,12 +350,14 @@ export const AlbumDetail = ({
 
               {/* Key Highlights mini gallery */}
               <div className="bg-white border border-stone-100 rounded-2xl p-4 shadow-sm space-y-2">
-                <h4 className="font-serif font-bold text-stone-900 text-sm">Destacados</h4>
+                <h4 className="font-serif font-bold text-stone-900 text-sm">
+                  {language === 'es' ? 'Destacados' : 'Highlights'}
+                </h4>
                 <div className="grid grid-cols-2 gap-1.5">
                   {album.memories.slice(0, 3).map((m, idx) => (
                     <img key={idx} src={m.imageUrl} alt="highlight" className="aspect-square object-cover rounded-md w-full" />
                   ))}
-                  <button onClick={() => setActiveTab('Recuerdos')} className="aspect-square bg-stone-50 hover:bg-stone-100 rounded-md flex items-center justify-center font-bold text-primary border border-dashed border-stone-200">
+                  <button onClick={() => setActiveTab('memories')} className="aspect-square bg-stone-50 hover:bg-stone-100 rounded-md flex items-center justify-center font-bold text-amber-900 border border-dashed border-stone-200 cursor-pointer">
                     +
                   </button>
                 </div>
@@ -336,7 +367,7 @@ export const AlbumDetail = ({
           </div>
         );
 
-      case 'Asistente IA':
+      case 'ai':
         return (
           <MemoryAssistant 
             suggestions={suggestions} 
@@ -346,15 +377,21 @@ export const AlbumDetail = ({
           />
         );
 
-      default: // Bitácora
+      default: // Bitácora (logbook)
         return (
           <div className="w-full flex flex-col md:flex-row gap-12">
             
             {/* Chapters and quote (Left) */}
             <div className="md:w-2/3 space-y-12">
               <div className="mb-6">
-                <h3 className="font-serif text-2xl font-bold text-amber-950">Bitácora del Álbum</h3>
-                <p className="text-xs text-stone-500 mt-1">Línea de tiempo cronológica con relatos de este baúl de recuerdos.</p>
+                <h3 className="font-serif text-2xl font-bold text-amber-950">
+                  {language === 'es' ? 'Bitácora del Álbum' : 'Album Logbook'}
+                </h3>
+                <p className="text-xs text-stone-500 mt-1">
+                  {language === 'es' 
+                    ? 'Línea de tiempo cronológica con relatos de este baúl de recuerdos.' 
+                    : 'Chronological timeline with stories from this memory chest.'}
+                </p>
               </div>
 
               <div className="relative border-l border-amber-900/15 ml-4 md:ml-6 pl-6 md:pl-10 space-y-12 py-4">
@@ -393,11 +430,13 @@ export const AlbumDetail = ({
 
               {/* Key Moments gallery header */}
               <div className="space-y-3">
-                <h3 className="text-lg font-serif font-bold text-stone-900">Momentos Clave</h3>
+                <h3 className="text-lg font-serif font-bold text-stone-900">
+                  {language === 'es' ? 'Momentos Clave' : 'Key Moments'}
+                </h3>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {album.memories.map((m, idx) => (
-                    <div key={idx} className="group bg-white p-1.5 rounded-lg border border-stone-100 shadow-sm hover:shadow transition">
+                    <div key={idx} className="group bg-white p-1.5 rounded-lg border border-stone-100 shadow-sm hover:shadow transition-all">
                       <img src={m.imageUrl} className="aspect-square object-cover rounded-md w-full mb-1" alt={m.caption} />
                       <p className="text-[9px] text-stone-500 text-center truncate italic">"{m.caption}"</p>
                     </div>
@@ -411,12 +450,14 @@ export const AlbumDetail = ({
               
               {/* Info card */}
               <div className="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm space-y-4">
-                <h3 className="font-serif text-lg font-bold text-stone-950">Sobre este viaje</h3>
+                <h3 className="font-serif text-lg font-bold text-stone-950">
+                  {language === 'es' ? 'Sobre este baúl' : 'About this chest'}
+                </h3>
                 
                 {/* Simulated map placeholder */}
                 <div className="aspect-[16/10] bg-stone-50 rounded-lg border border-stone-100 flex items-center justify-center relative overflow-hidden">
                   <div className="text-center p-4">
-                    <MapPin className="w-6 h-6 text-primary mx-auto mb-1 animate-bounce" />
+                    <MapPin className="w-6 h-6 text-amber-900 mx-auto mb-1 animate-bounce" />
                     <p className="text-[10px] font-bold text-stone-700">{album.location}</p>
                   </div>
                 </div>
@@ -428,21 +469,27 @@ export const AlbumDetail = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-stone-300" />
-                    <span>Categorías: <span className="font-semibold text-stone-900">{album.companions.join(', ')}</span></span>
+                    <span>
+                      {language === 'es' ? 'Categorías:' : 'Categories:'} <span className="font-semibold text-stone-900">{album.companions.join(', ')}</span>
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex justify-between mt-4 pt-4 border-t border-stone-50">
                   <div className="text-center w-full">
                     <p className="text-2xl font-bold font-serif text-stone-950">{album.memories?.length || 0}</p>
-                    <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">RECUERDOS</p>
+                    <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">
+                      {language === 'es' ? 'RECUERDOS' : 'MEMORIES'}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Viajeros List card */}
               <div className="bg-white p-5 rounded-2xl border border-stone-100 shadow-sm space-y-3">
-                <h3 className="font-serif text-lg font-bold text-stone-950">Viajeros</h3>
+                <h3 className="font-serif text-lg font-bold text-stone-950">
+                  {language === 'es' ? 'Integrantes' : 'Members'}
+                </h3>
                 <div className="space-y-2">
                   {album.members.slice(0, 3).map((m, i) => (
                     <div key={i} className="flex items-center gap-2">
@@ -455,10 +502,10 @@ export const AlbumDetail = ({
                   ))}
                 </div>
                 <button 
-                  onClick={() => setActiveTab('Personas')}
-                  className="w-full text-center border border-dashed border-stone-200 hover:border-primary py-2 rounded-md text-[10px] font-bold text-stone-600 transition"
+                  onClick={() => setActiveTab('people')}
+                  className="w-full text-center border border-dashed border-stone-200 hover:border-amber-900 py-2 rounded-md text-[10px] font-bold text-stone-600 transition cursor-pointer"
                 >
-                  + INVITAR
+                  + {language === 'es' ? 'INVITAR' : 'INVITE'}
                 </button>
               </div>
 
@@ -478,10 +525,12 @@ export const AlbumDetail = ({
         {/* Back navigation */}
         <button 
           onClick={onBack} 
-          className="absolute top-6 left-4 md:left-6 bg-white/10 backdrop-blur-md hover:bg-white/20 p-2.5 rounded-full text-white transition flex items-center gap-1.5"
+          className="absolute top-6 left-4 md:left-6 bg-white/10 backdrop-blur-md hover:bg-white/20 p-2.5 rounded-full text-white transition flex items-center gap-1.5 cursor-pointer"
         >
           <ArrowLeft className="w-5 h-5" />
-          <span className="hidden sm:inline text-xs font-bold uppercase pr-2">Volver</span>
+          <span className="hidden sm:inline text-xs font-bold uppercase pr-2">
+            {language === 'es' ? 'Volver' : 'Back'}
+          </span>
         </button>
 
         {/* Hero bottom content */}
@@ -505,14 +554,14 @@ export const AlbumDetail = ({
               )}
             </div>
             
-            <button className="hidden sm:flex bg-white/15 backdrop-blur-md hover:bg-white/25 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider items-center gap-1.5 transition">
-              <Share2 className="w-4 h-4" /> Compartir
+            <button className="hidden sm:flex bg-white/15 backdrop-blur-md hover:bg-white/25 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider items-center gap-1.5 transition cursor-pointer">
+              <Share2 className="w-4 h-4" /> {language === 'es' ? 'Compartir' : 'Share'}
             </button>
             <button 
               onClick={onAddMemoryClick}
-              className="bg-amber-900 hover:bg-amber-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition shadow"
+              className="bg-amber-900 hover:bg-amber-800 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 transition shadow cursor-pointer"
             >
-              <Camera className="w-4 h-4" /> Añadir Recuerdo
+              <Camera className="w-4 h-4" /> {language === 'es' ? 'Añadir Recuerdo' : 'Add Memory'}
             </button>
           </div>
         </div>
@@ -521,15 +570,21 @@ export const AlbumDetail = ({
       {/* Album Tabs */}
       <div className="border-b border-stone-200 bg-white sticky top-0 md:top-[72px] z-20">
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex gap-6 md:gap-8 overflow-x-auto hide-scrollbar">
-          {['Bitácora', 'Recuerdos', 'Personas', 'Conversación', 'Asistente IA'].map((tab) => (
+          {[
+            { id: 'logbook', label: language === 'es' ? 'Bitácora' : 'Logbook' },
+            { id: 'memories', label: language === 'es' ? 'Recuerdos' : 'Memories' },
+            { id: 'people', label: language === 'es' ? 'Personas' : 'People' },
+            { id: 'conversation', label: language === 'es' ? 'Conversación' : 'Conversation' },
+            { id: 'ai', label: language === 'es' ? 'Asistente IA' : 'AI Assistant' }
+          ].map((tab) => (
             <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)} 
-              className={`py-4 text-xs font-bold uppercase tracking-widest border-b-2 whitespace-nowrap transition ${
-                activeTab === tab ? 'text-amber-900 border-amber-900' : 'text-stone-500 border-transparent hover:text-amber-900'
+              key={tab.id} 
+              onClick={() => setActiveTab(tab.id as any)} 
+              className={`py-4 text-xs font-bold uppercase tracking-widest border-b-2 whitespace-nowrap transition cursor-pointer ${
+                activeTab === tab.id ? 'text-amber-900 border-amber-900' : 'text-stone-500 border-transparent hover:text-amber-900'
               }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>
