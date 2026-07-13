@@ -37,7 +37,6 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
         <nav className="hidden md:flex gap-6">
           {[
             { id: 'Home', label: 'Inicio' },
-            { id: 'Assistant', label: 'Asistente IA' },
             { id: 'Legacy', label: 'Legado Digital' }
           ].map((tab) => (
             <button 
@@ -60,15 +59,6 @@ export const Header = ({ currentTab, onTabChange, onAddMemoryClick, onLogout }: 
       {/* Header Right Interactions */}
       <div className="flex items-center gap-4 relative">
         
-        {/* Quick Add Memory CTA */}
-        <button 
-          onClick={onAddMemoryClick}
-          className="bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition"
-        >
-          <Camera className="w-4 h-4" />
-          <span className="hidden sm:inline">Nuevo Recuerdo</span>
-        </button>
-
         {/* Notifications Icon Button */}
         <div className="relative">
           <button 

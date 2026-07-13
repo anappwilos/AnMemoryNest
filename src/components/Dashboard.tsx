@@ -24,37 +24,6 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
   return (
     <main className="p-6 max-w-7xl mx-auto space-y-8">
       
-      {/* Dynamic Welcome Greeting Banner */}
-      <div className="bg-white rounded-2xl p-8 border border-stone-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div className="space-y-1">
-          <h2 className="text-4xl font-serif text-stone-950 font-bold">Hola, {userName ? userName.split(' ')[0] : 'Explorador'}</h2>
-          <p className="text-stone-500 text-sm max-w-lg">Tienes tus recuerdos compartidos esperándote.</p>
-          
-          <div className="flex flex-wrap gap-3 pt-4">
-            <button 
-              onClick={onAddMemoryClick} 
-              className="bg-primary text-white hover:opacity-90 px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition"
-            >
-              <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
-            </button>
-          </div>
-        </div>
-
-        {/* AI Quick Shortcut Widget */}
-        <div 
-          onClick={() => onNavigateToTab('AI-Assistant')}
-          className="bg-stone-50 p-4 rounded-xl border border-stone-100 hover:border-primary/20 cursor-pointer transition flex items-center gap-4 max-w-sm"
-        >
-          <div className="p-2.5 bg-white rounded-lg text-primary shadow-sm border border-stone-100">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div className="space-y-0.5">
-            <h4 className="font-bold text-stone-900 text-xs">Asistente IA</h4>
-            <p className="text-[10px] text-stone-500">Sugerencias y organización inteligente.</p>
-          </div>
-        </div>
-      </div>
-
       {/* Catalog Search and Filters Section */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
@@ -86,6 +55,7 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
             <option value="Amigos">Amigos</option>
             <option value="Compañeros">Compañeros</option>
           </select>
+
         </div>
       </div>
 
@@ -148,6 +118,14 @@ export const Dashboard = ({ albums, userName, onAlbumClick, onAddMemoryClick, on
           ))}
         </div>
       )}
+        <div className="flex flex-wrap gap-3 pt-4">
+            <button 
+              onClick={onAddMemoryClick} 
+              className="bg-primary text-white hover:opacity-90 px-4 py-2 rounded-md text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition"
+            >
+              <Camera className="w-3.5 h-3.5" /> Añadir Recuerdo
+            </button>
+          </div>
     </main>
   );
 };

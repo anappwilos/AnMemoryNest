@@ -93,10 +93,6 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string
       
       {/* Footer */}
       <footer className="px-4 md:px-8 py-8 border-t border-stone-200">
-        <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="w-6 h-6 text-amber-900" />
-            <h1 className="text-xl font-serif font-bold text-amber-900">AnMemoryNest</h1>
-        </div>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-sm text-stone-500 gap-4">
             <p>© 2026 AnMemoryNest. Tus recuerdos, construidos entre todos.</p>
             <div className="flex flex-wrap gap-4 md:gap-6">
