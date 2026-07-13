@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Camera, Share2, MapPin, Calendar, Heart, Users, ArrowLeft, Send, Mic, FileText, Check } from 'lucide-react';
 import { Album, AISuggestion } from '../types';
 import { MemoryAssistant } from './MemoryAssistant';
+import { PROJECT_IMAGES } from '../lib/images';
 
 interface AlbumDetailProps {
   album: Album;
@@ -39,8 +40,8 @@ export const AlbumDetail = ({
     // Use a high-quality aesthetic avatar placeholder based on relation/gender
     const isMale = ['padre', 'tío', 'hermano', 'primo', 'abuelo'].some(r => inviteRole.toLowerCase().includes(r));
     const avatarUrl = isMale 
-      ? 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100'
-      : 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100';
+      ? PROJECT_IMAGES.AVATARS.DEFAULT_MALE
+      : PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE;
 
     const newMember = {
       name: inviteName,
@@ -69,7 +70,7 @@ export const AlbumDetail = ({
     const newMessage = {
       id: `c_${Date.now()}`,
       author: 'Yo (Ana)',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
+      avatar: PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE,
       message: chatMessage,
       date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
     };
@@ -86,7 +87,7 @@ export const AlbumDetail = ({
     const newAudio = {
       id: `c_${Date.now()}`,
       author: 'Yo (Ana)',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
+      avatar: PROJECT_IMAGES.AVATARS.DEFAULT_FEMALE,
       date: `Hoy · ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
       isAudio: true,
       audioUrl: '#',

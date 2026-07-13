@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, Camera, Mic, MapPin, Calendar, Check, AlertCircle } from 'lucide-react';
 import { Album } from '../types';
+import { PROJECT_IMAGES } from '../lib/images';
 
 interface NewMemoryModalProps {
   albums: Album[];
@@ -16,12 +17,16 @@ interface NewMemoryModalProps {
 }
 
 const PRESET_IMAGES = [
-  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=400',
-  'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=400',
-  'https://images.unsplash.com/photo-1534080391025-a17c0af14a7f?auto=format&fit=crop&q=80&w=400',
-  'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&q=80&w=400',
-  'https://images.unsplash.com/photo-1513807016779-d51c0c026263?auto=format&fit=crop&q=80&w=400',
-  'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=400'
+  PROJECT_IMAGES.TRAVEL.SUNSET,
+  PROJECT_IMAGES.TRAVEL.ROAD_TRIP,
+  PROJECT_IMAGES.TRAVEL.TRAIN_STATION,
+  PROJECT_IMAGES.TRAVEL.PLANE_VIEW,
+  PROJECT_IMAGES.TRAVEL.SUMMER_DRINKS,
+  PROJECT_IMAGES.FAMILY.DINNER,
+  PROJECT_IMAGES.FAMILY.SUNDAY_LUNCH,
+  PROJECT_IMAGES.FAMILY.HUG,
+  PROJECT_IMAGES.FAMILY.GRANDPA_GAMES,
+  PROJECT_IMAGES.FAMILY.BIRTHDAY
 ];
 
 export const NewMemoryModal = ({ albums, onClose, onSave, defaultAlbumId }: NewMemoryModalProps) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Sparkles, Play, Lock, Users } from 'lucide-react';
+import { PROJECT_IMAGES } from '../lib/images';
 
 export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string, category: string, date: string, location: string) => void }) => {
   const [title, setTitle] = React.useState('');
@@ -73,7 +74,7 @@ export const CreateAlbum = ({ onAlbumCreated }: { onAlbumCreated: (title: string
         </div>
 
         <div className="w-full md:w-1/2 relative hidden sm:block">
-            <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800" alt="Family" className="w-full h-full object-cover rounded-xl" />
+            <img src={PROJECT_IMAGES.LANDING.HERO_FAMILY} alt="Family" className="w-full h-full object-cover rounded-xl" />
             <div className="absolute bottom-4 md:bottom-10 left-4 md:left-10 right-4 md:right-10 bg-white/90 backdrop-blur-sm p-4 md:p-6 rounded-xl shadow-lg border border-stone-100">
                 <div className="flex items-center gap-3 mb-4">
                     <Sparkles className="w-5 h-5 text-amber-900" />

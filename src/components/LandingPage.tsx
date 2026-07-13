@@ -1,5 +1,6 @@
 import React from 'react';
 import { Leaf, ArrowRight, Play } from 'lucide-react';
+import { PROJECT_IMAGES } from '../lib/images';
 
 export const LandingPage = ({ onStart }: { onStart: () => void }) => {
   return (
@@ -25,11 +26,11 @@ export const LandingPage = ({ onStart }: { onStart: () => void }) => {
         </div>
         <div className="relative hidden md:block">
           <div className="absolute top-0 right-0 w-3/4 rotate-3 bg-white p-4 shadow-lg rounded-sm">
-             <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=600" alt="Family dinner" className="w-full h-64 object-cover" />
+             <img src={PROJECT_IMAGES.LANDING.HERO_FAMILY} alt="Family dinner" className="w-full h-64 object-cover" />
              <p className="text-xs mt-2 text-stone-500">La cena de Navidad, 1988</p>
           </div>
           <div className="absolute top-20 right-10 w-2/3 -rotate-6 bg-white p-4 shadow-lg rounded-sm">
-             <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=600" alt="Grandma" className="w-full h-64 object-cover" />
+             <img src={PROJECT_IMAGES.TRAVEL.SUNSET} alt="Interrail journey" className="w-full h-64 object-cover" />
              <p className="text-xs mt-2 text-stone-500">Interrail 2026</p>
           </div>
           <div className="h-96"></div>

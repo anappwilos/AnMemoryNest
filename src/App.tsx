@@ -20,6 +20,7 @@ import { Album, AISuggestion } from './types';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import { useAlbums, useCreateAlbum, useUpdateAlbum } from './hooks/useAlbums';
+import { PROJECT_IMAGES } from './lib/images';
 
 export default function App() {
   const [mockUser, setMockUser] = useState<any | null>(() => {
@@ -117,7 +118,7 @@ export default function App() {
           title: '¿Identificar rostro?',
           description: 'Hemos detectado a una persona frecuente en varias fotos de este álbum. ¿Es tu hermano Carlos?',
           targetAlbum: travelAlbum?.id || albums[0].id,
-          targetImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=300',
+          targetImage: PROJECT_IMAGES.TRAVEL.SUMMER_DRINKS, // This is a real photo in the travel album
         },
         {
           id: 'sug_2',
@@ -125,7 +126,7 @@ export default function App() {
           title: 'Completar fecha sugerida',
           description: 'La foto de la cena familiar parece haber sido tomada durante el año nuevo de 2026. ¿Quieres asignarle la fecha correcta?',
           targetAlbum: familyAlbum?.id || albums[0].id,
-          targetImage: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=300',
+          targetImage: PROJECT_IMAGES.FAMILY.DINNER, // Exact match with the family dinner image
         },
         {
           id: 'sug_3',
@@ -133,7 +134,7 @@ export default function App() {
           title: 'Limpieza de fotos duplicadas',
           description: 'Se encontraron dos imágenes casi idénticas de "La puesta de sol". Te sugerimos conservar la de mayor resolución.',
           targetAlbum: travelAlbum?.id || albums[0].id,
-          targetImage: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=300',
+          targetImage: `${PROJECT_IMAGES.TRAVEL.SUNSET}&dup=1`, // Perfect match for the duplicate memory URL
         }
       ];
       setAiSuggestions(initialSuggestions);
@@ -148,17 +149,18 @@ export default function App() {
         date: '2026-06-01',
         location: 'Europa',
         memories: [
-          { id: 'm_tr_1', imageUrl: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800', caption: 'Puesta de sol espectacular desde las costas del sur de Europa.', date: '2026-06-02' },
-          { id: 'm_tr_2', imageUrl: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800', caption: 'Nuestra aventura por carreteras infinitas y parajes espectaculares.', date: '2026-06-05' },
-          { id: 'm_tr_3', imageUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800', caption: 'Planeando la siguiente parada en la estación del tren.', date: '2026-06-10' },
-          { id: 'm_tr_4', imageUrl: 'https://images.unsplash.com/photo-1500835595337-f74001712681?auto=format&fit=crop&q=80&w=800', caption: 'El amanecer desde las nubes en nuestro primer vuelo juntos.', date: '2026-06-12' },
-          { id: 'm_tr_5', imageUrl: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=800', caption: 'Las risas infinitas y brindis que marcaron este verano europeo.', date: '2026-06-15' }
+          { id: 'm_tr_1', imageUrl: PROJECT_IMAGES.TRAVEL.SUNSET, caption: 'Puesta de sol espectacular desde las costas del sur de Europa.', date: '2026-06-02' },
+          { id: 'm_tr_1_dup', imageUrl: `${PROJECT_IMAGES.TRAVEL.SUNSET}&dup=1`, caption: 'Puesta de sol espectacular desde las costas (Copia de menor resolución).', date: '2026-06-02' },
+          { id: 'm_tr_2', imageUrl: PROJECT_IMAGES.TRAVEL.ROAD_TRIP, caption: 'Nuestra aventura por carreteras infinitas y parajes espectaculares.', date: '2026-06-05' },
+          { id: 'm_tr_3', imageUrl: PROJECT_IMAGES.TRAVEL.TRAIN_STATION, caption: 'Planeando la siguiente parada en la estación del tren.', date: '2026-06-10' },
+          { id: 'm_tr_4', imageUrl: PROJECT_IMAGES.TRAVEL.PLANE_VIEW, caption: 'El amanecer desde las nubes en nuestro primer vuelo juntos.', date: '2026-06-12' },
+          { id: 'm_tr_5', imageUrl: PROJECT_IMAGES.TRAVEL.SUMMER_DRINKS, caption: 'Las risas infinitas y brindis que marcaron este verano europeo.', date: '2026-06-15' }
         ],
         members: [
-          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
-          { name: 'Carlos Ruiz', role: 'Aventurero / Hermano', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100', online: true },
-          { name: 'Santi Martínez', role: 'Fotógrafo oficial', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=100', online: false },
-          { name: 'Laura Gómez', role: 'Organizadora de rutas', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=100', online: true }
+          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || PROJECT_IMAGES.AVATARS.MAMA_MARIA, online: true },
+          // Carlos Ruiz is recognized in the album, so we let suggestion 1 dynamically add him when accepted!
+          { name: 'Santi Martínez', role: 'Fotógrafo oficial', avatar: PROJECT_IMAGES.AVATARS.SANTI, online: false },
+          { name: 'Laura Gómez', role: 'Organizadora de rutas', avatar: PROJECT_IMAGES.AVATARS.LAURA, online: true }
         ]
       },
       {
@@ -167,18 +169,19 @@ export default function App() {
         date: '2026-01-01',
         location: 'Casa',
         memories: [
-          { id: 'm_fa_1', imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800', caption: 'Cena de Año Nuevo reuniendo a tres generaciones de la familia.', date: '2026-01-01' },
-          { id: 'm_fa_2', imageUrl: 'https://images.unsplash.com/photo-1595981234969-8259b94fde88?auto=format&fit=crop&q=80&w=800', caption: 'Un almuerzo dominical de risas y anécdotas compartidas en casa.', date: '2026-01-05' },
-          { id: 'm_fa_3', imageUrl: 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=800', caption: 'Momentos dulces y abrazos llenos de amor incondicional.', date: '2026-01-10' },
-          { id: 'm_fa_4', imageUrl: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&q=80&w=800', caption: 'Abuelo enseñando con paciencia los juegos clásicos de su infancia.', date: '2026-01-15' },
-          { id: 'm_fa_5', imageUrl: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800', caption: 'Celebrando con globos, pasteles y alegría el cumpleaños familiar.', date: '2026-01-20' }
+          // Dinner has "Sin fecha" initially to allow the suggestion to dynamically fix it!
+          { id: 'm_fa_1', imageUrl: PROJECT_IMAGES.FAMILY.DINNER, caption: 'Cena de Año Nuevo reuniendo a tres generaciones de la familia.', date: 'Sin fecha' },
+          { id: 'm_fa_2', imageUrl: PROJECT_IMAGES.FAMILY.SUNDAY_LUNCH, caption: 'Un almuerzo dominical de risas y anécdotas compartidas en casa.', date: '2026-01-05' },
+          { id: 'm_fa_3', imageUrl: PROJECT_IMAGES.FAMILY.HUG, caption: 'Momentos dulces y abrazos llenos de amor incondicional.', date: '2026-01-10' },
+          { id: 'm_fa_4', imageUrl: PROJECT_IMAGES.FAMILY.GRANDPA_GAMES, caption: 'Abuelo enseñando con paciencia los juegos clásicos de su infancia.', date: '2026-01-15' },
+          { id: 'm_fa_5', imageUrl: PROJECT_IMAGES.FAMILY.BIRTHDAY, caption: 'Celebrando con globos, pasteles y alegría el cumpleaños familiar.', date: '2026-01-20' }
         ],
         members: [
-          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
-          { name: 'Abuela Carmen', role: 'Matriarca', avatar: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&q=80&w=100', online: true },
-          { name: 'Mamá (María)', role: 'Co-organizadora', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=100', online: true },
-          { name: 'Abuelo Manuel', role: 'Legado Familiar', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100', online: false },
-          { name: 'Papá (Roberto)', role: 'Asador principal', avatar: 'https://images.unsplash.com/photo-1500048993953-d23a436266cf?auto=format&fit=crop&q=80&w=100', online: true }
+          { name: user.displayName || 'Creador', role: 'Creador del álbum', avatar: user.photoURL || PROJECT_IMAGES.AVATARS.MAMA_MARIA, online: true },
+          { name: 'Abuela Carmen', role: 'Matriarca', avatar: PROJECT_IMAGES.AVATARS.ABUELA_CARMEN, online: true },
+          { name: 'Mamá (María)', role: 'Co-organizadora', avatar: PROJECT_IMAGES.AVATARS.MAMA_MARIA, online: true },
+          { name: 'Abuelo Manuel', role: 'Legado Familiar', avatar: PROJECT_IMAGES.AVATARS.ABUELO_MANUEL, online: false },
+          { name: 'Papá (Roberto)', role: 'Asador principal', avatar: PROJECT_IMAGES.AVATARS.PAPA_ROBERTO, online: true }
         ]
       }
     ];
@@ -187,8 +190,8 @@ export default function App() {
 
     for (const demo of demos) {
       const defaultCover = demo.category === 'travel' 
-        ? 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
-        : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
+        ? PROJECT_IMAGES.COVERS.TRAVEL_SUNSET
+        : PROJECT_IMAGES.COVERS.FAMILY_DINNER;
 
       const newAlbumData: Partial<Album> = {
         id: `album_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

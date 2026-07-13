@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Leaf, Eye } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { PROJECT_IMAGES } from '../lib/images';
 
 export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void }) => {
   const [email, setEmail] = useState('');
@@ -49,7 +50,7 @@ export const Register = ({ onNavigateToLogin }: { onNavigateToLogin: () => void 
       <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full max-w-4xl h-auto md:h-[600px]">
         {/* Image Side */}
         <div className="w-full md:w-1/2 bg-stone-100 relative hidden md:block">
-            <img src="https://images.unsplash.com/photo-1627353802076-bd439e09244b?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Family" className="w-full h-full object-cover" />
+            <img src={PROJECT_IMAGES.LANDING.REGISTER_BACKGROUND} alt="Family" className="w-full h-full object-cover" />
         </div>
 
         {/* Form Side */}

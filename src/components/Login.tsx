@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Leaf, Eye, EyeOff, Info, Database, ShieldAlert } from 'lucide-react';
 import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { PROJECT_IMAGES } from '../lib/images';
 
 export const Login = ({ onNavigateToRegister, onLoginSuccess }: { 
   onNavigateToRegister: () => void; 
@@ -30,7 +31,7 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: {
           uid: 'mock_demo_root_user_uid',
           email: demoEmail,
           displayName: 'Administrador Demo',
-          photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100'
+          photoURL: PROJECT_IMAGES.AVATARS.DEFAULT
         });
         return;
       }
@@ -203,7 +204,7 @@ export const Login = ({ onNavigateToRegister, onLoginSuccess }: {
         
         {/* Image Side */}
         <div className="w-full md:w-1/2 bg-stone-100 relative hidden md:block">
-            <img src="https://images.unsplash.com/photo-1595981234969-8259b94fde88?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Family" className="w-full h-full object-cover" />
+            <img src={PROJECT_IMAGES.LANDING.LOGIN_BACKGROUND} alt="Family" className="w-full h-full object-cover" />
         </div>
       </div>
     </div>
