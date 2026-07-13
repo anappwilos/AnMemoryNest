@@ -23,7 +23,11 @@ import { auth } from './lib/firebase';
 import { useAlbums, useCreateAlbum, useUpdateAlbum } from './hooks/useAlbums';
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [mockUser, setMockUser] = useState<any | null>(() => {
+    const saved = localStorage.getItem('memorynest_mock_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [firebaseUser, setFirebaseUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   
   const [currentView, setCurrentView] = useState('landing');
@@ -33,37 +37,65 @@ export default function App() {
   const [newMemoryModalOpen, setNewMemoryModalOpen] = useState(false);
   const [demoAlbumsCreated, setDemoAlbumsCreated] = useState(false);
 
-  const albumsQuery = useAlbums(user?.uid);
+  const user = mockUser || firebaseUser;
+  const isDemoSession = user?.email === ((import.meta as any).env.VITE_DEMO_EMAIL || 'root@root.com');
+
+  const albumsQuery = useAlbums(isDemoSession ? undefined : user?.uid);
   const createAlbumMutation = useCreateAlbum();
   const updateAlbumMutation = useUpdateAlbum();
 
-  const albums = albumsQuery.data || [];
+  const [localAlbums, setLocalAlbums] = useState<Album[]>(() => {
+    const saved = localStorage.getItem('memorynest_demo_albums');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const albums = isDemoSession ? localAlbums : (albumsQuery.data || []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setAuthLoading(false);
-      if (currentUser) {
+      setFirebaseUser(currentUser);
+      if (!mockUser) {
+        setAuthLoading(false);
+      }
+      if (currentUser && !mockUser) {
         if (currentView === 'landing' || currentView === 'login' || currentView === 'register') {
           setCurrentView('dashboard');
         }
-      } else {
+      } else if (!currentUser && !mockUser) {
         if (currentView !== 'landing' && currentView !== 'login' && currentView !== 'register') {
           setCurrentView('landing');
         }
       }
     });
     return unsubscribe;
-  }, [currentView]);
+  }, [currentView, mockUser]);
 
   useEffect(() => {
-    if (user && !authLoading && !albumsQuery.isLoading && albums.length === 0 && !demoAlbumsCreated) {
-      setDemoAlbumsCreated(true);
-      createDefaultAlbums(user);
+    if (mockUser) {
+      setAuthLoading(false);
+      if (currentView === 'landing' || currentView === 'login' || currentView === 'register') {
+        setCurrentView('dashboard');
+      }
     }
-  }, [user, authLoading, albums, albumsQuery.isLoading, demoAlbumsCreated]);
+  }, [mockUser, currentView]);
 
-  const createDefaultAlbums = async (user: User) => {
+  useEffect(() => {
+    if (user && !authLoading) {
+      if (isDemoSession) {
+        if (localAlbums.length === 0 && !demoAlbumsCreated) {
+          setDemoAlbumsCreated(true);
+          createDefaultAlbums(user);
+        }
+      } else {
+        if (!albumsQuery.isLoading && albums.length === 0 && !demoAlbumsCreated) {
+          setDemoAlbumsCreated(true);
+          createDefaultAlbums(user);
+        }
+      }
+    }
+  }, [user, authLoading, albums, albumsQuery.isLoading, demoAlbumsCreated, isDemoSession, localAlbums.length]);
+
+  const createDefaultAlbums = async (user: any) => {
     const demos = [
       {
         title: 'Viaje Interrail 2026',
@@ -79,12 +111,15 @@ export default function App() {
       }
     ];
 
+    const createdDemoAlbums: Album[] = [];
+
     for (const demo of demos) {
       const defaultCover = demo.category === 'travel' 
-        ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
+        ? 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
         : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
 
       const newAlbumData: Partial<Album> = {
+        id: `album_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         title: demo.title,
         date: demo.date,
         location: demo.location,
@@ -110,7 +145,16 @@ export default function App() {
         conversation: []
       };
 
-      await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+      if (isDemoSession) {
+        createdDemoAlbums.push(newAlbumData as Album);
+      } else {
+        await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+      }
+    }
+
+    if (isDemoSession) {
+      setLocalAlbums(createdDemoAlbums);
+      localStorage.setItem('memorynest_demo_albums', JSON.stringify(createdDemoAlbums));
     }
   };
 
@@ -119,10 +163,11 @@ export default function App() {
     if (!user) return;
     
     const defaultCover = category === 'travel' 
-      ? 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
+      ? 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
       : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
 
     const newAlbumData: Partial<Album> = {
+      id: `album_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       title,
       date: date,
       location: location,
@@ -148,7 +193,13 @@ export default function App() {
       conversation: []
     };
 
-    await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+    if (isDemoSession) {
+      const updated = [...localAlbums, newAlbumData as Album];
+      setLocalAlbums(updated);
+      localStorage.setItem('memorynest_demo_albums', JSON.stringify(updated));
+    } else {
+      await createAlbumMutation.mutateAsync({ data: newAlbumData, userId: user.uid });
+    }
     
     setCurrentView('dashboard');
     setCurrentTab('Home');
@@ -203,7 +254,13 @@ export default function App() {
       conversation: conversationWithAudio
     };
 
-    await updateAlbumMutation.mutateAsync({ albumId, data: updatedData });
+    if (isDemoSession) {
+      const updated = localAlbums.map(a => a.id === albumId ? { ...a, ...updatedData } : a);
+      setLocalAlbums(updated);
+      localStorage.setItem('memorynest_demo_albums', JSON.stringify(updated));
+    } else {
+      await updateAlbumMutation.mutateAsync({ albumId, data: updatedData });
+    }
   };
 
   // Handle accepting AI suggestions
@@ -216,7 +273,26 @@ export default function App() {
   };
 
   const handleUpdateAlbum = async (updatedAlbum: Album) => {
-    await updateAlbumMutation.mutateAsync({ albumId: updatedAlbum.id, data: updatedAlbum });
+    if (isDemoSession) {
+      const updated = localAlbums.map(a => a.id === updatedAlbum.id ? updatedAlbum : a);
+      setLocalAlbums(updated);
+      localStorage.setItem('memorynest_demo_albums', JSON.stringify(updated));
+    } else {
+      await updateAlbumMutation.mutateAsync({ albumId: updatedAlbum.id, data: updatedAlbum });
+    }
+  };
+
+  const handleLogout = () => {
+    if (mockUser) {
+      setMockUser(null);
+      localStorage.removeItem('memorynest_mock_user');
+      localStorage.removeItem('memorynest_demo_albums');
+      setLocalAlbums([]);
+      setDemoAlbumsCreated(false);
+      setCurrentView('landing');
+    } else {
+      auth.signOut();
+    }
   };
 
   const activeAlbum = albums.find(a => a.id === activeAlbumId);
@@ -230,7 +306,18 @@ export default function App() {
       case 'landing':
         return <LandingPage onStart={() => setCurrentView('login')} />;
       case 'login':
-        return <Login onNavigateToRegister={() => setCurrentView('register')} onLoginSuccess={() => setCurrentView('dashboard')} />;
+        return (
+          <Login 
+            onNavigateToRegister={() => setCurrentView('register')} 
+            onLoginSuccess={(customUser?: any) => {
+              if (customUser) {
+                setMockUser(customUser);
+                localStorage.setItem('memorynest_mock_user', JSON.stringify(customUser));
+              }
+              setCurrentView('dashboard');
+            }} 
+          />
+        );
       case 'register':
         return <Register onNavigateToLogin={() => setCurrentView('login')} />;
       case 'create-album':
