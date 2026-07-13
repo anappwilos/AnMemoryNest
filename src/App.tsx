@@ -20,6 +20,7 @@ import { Album, AISuggestion } from './types';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from './lib/firebase';
 import { useAlbums, useCreateAlbum, useUpdateAlbum } from './hooks/useAlbums';
+import { sanitizeAlbum } from './lib/firestore';
 import { PROJECT_IMAGES } from './lib/images';
 
 export default function App() {
@@ -51,7 +52,7 @@ export default function App() {
         const parsed = JSON.parse(saved);
         const needsRegeneration = parsed.some((a: Album) => !a.memories || a.memories.length < 5);
         if (!needsRegeneration) {
-          return parsed;
+          return parsed.map(sanitizeAlbum);
         }
       } catch (e) {
         // ignore parsing error
@@ -236,8 +237,8 @@ export default function App() {
     if (!user) return;
     
     const defaultCover = category === 'travel' 
-      ? 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800'
-      : 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800';
+      ? PROJECT_IMAGES.COVERS.TRAVEL_SUNSET
+      : PROJECT_IMAGES.COVERS.FAMILY_DINNER;
 
     const newAlbumData: Partial<Album> = {
       id: `album_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,

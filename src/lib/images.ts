@@ -16,16 +16,16 @@ export const PROJECT_IMAGES = {
 
   // Categorías Generales de Álbumes
   COVERS: {
-    TRAVEL_SUNSET: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800',
+    TRAVEL_SUNSET: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800',
     FAMILY_DINNER: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800',
   },
 
   // Recuerdos de Viajes
   TRAVEL: {
-    SUNSET: 'https://images.unsplash.com/photo-150752428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800',
+    SUNSET: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=800',
     ROAD_TRIP: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
     TRAIN_STATION: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800',
-    PLANE_VIEW: 'https://images.unsplash.com/photo-1500835595337-f74001712681?auto=format&fit=crop&q=80&w=800',
+    PLANE_VIEW: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=800',
     SUMMER_DRINKS: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=800',
   },
 
